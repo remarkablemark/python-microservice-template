@@ -110,6 +110,10 @@ uv run alembic downgrade -1
 
 In the project directory, you can run:
 
+### `uv run pre-commit install`
+
+Installs the pre-commit script.
+
 ### `uv run fastapi dev`
 
 Runs the app in development mode:
@@ -135,17 +139,21 @@ Alternatively, run with uvicorn directly:
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### `uv run pre-commit install`
-
-Installs the pre-commit script.
-
 ### `uv run black .`
 
 Formats the code.
 
+### `uv run isort .`
+
+Sorts and organizes imports.
+
 ### `uv run ruff check`
 
 Lints the code.
+
+### `uv run coverage run -m pytest && uv run coverage report`
+
+Runs tests with coverage reporting (fails if coverage is below 100%).
 
 ### `uv run alembic revision --autogenerate -m "message"`
 
