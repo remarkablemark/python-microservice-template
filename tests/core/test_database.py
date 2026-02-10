@@ -2,9 +2,10 @@
 
 import pytest
 from fastapi import HTTPException
-from sqlmodel import Session, create_engine, select
+from sqlmodel import Session, select
 
 from app.core.database import create_db_and_tables, get_session
+from tests.utils.database import create_test_engine, temporary_test_engine
 
 
 def test_database_not_configured() -> None:
@@ -45,25 +46,10 @@ def test_database_create_tables(db_session: Session) -> None:
 
 def test_create_db_and_tables() -> None:
     """Test create_db_and_tables function."""
-    from sqlalchemy.pool import StaticPool
-
+    from app.core import database
     from app.models import user  # noqa: F401, F811  # type: ignore[reportUnusedImport]
 
-    # Create a test engine
-    test_engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    # Save current engine
-    from app.core import database
-
-    original_engine = database.engine
-    try:
-        # Set test engine
-        database.engine = test_engine
-
+    with temporary_test_engine(database) as test_engine:
         # Create tables
         create_db_and_tables()
 
@@ -74,10 +60,6 @@ def test_create_db_and_tables() -> None:
             statement = select(User)
             result = session.exec(statement).all()
             assert isinstance(result, list)
-    finally:
-        # Restore original engine
-        database.engine = original_engine
-        test_engine.dispose()
 
 
 def test_get_session_yields_session(db_session: Session) -> None:
@@ -87,8 +69,6 @@ def test_get_session_yields_session(db_session: Session) -> None:
 
 def test_database_sqlite_connection_args() -> None:
     """Test that SQLite URLs get special connection args."""
-    from sqlalchemy.pool import StaticPool
-
     # Test SQLite connection args logic
     test_url = "sqlite:///test.db"
     connect_args = {}
@@ -99,11 +79,7 @@ def test_database_sqlite_connection_args() -> None:
     assert connect_args == {"check_same_thread": False}
 
     # Create an engine to verify it works
-    test_engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    test_engine = create_test_engine()
     assert test_engine is not None
     test_engine.dispose()
 
@@ -122,23 +98,9 @@ def test_database_postgresql_no_special_args() -> None:
 
 def test_get_session_context_manager() -> None:
     """Test that get_session properly uses context manager."""
-    from sqlalchemy.pool import StaticPool
+    from app.core import database
 
-    from app.core import database  # noqa: F401, F811
-
-    # Create test engine
-    test_engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    # Save original engine
-    original_engine = database.engine
-
-    try:
-        # Set test engine
-        database.engine = test_engine
+    with temporary_test_engine(database):
         database.create_db_and_tables()
 
         # Test get_session generator
@@ -153,8 +115,3 @@ def test_get_session_context_manager() -> None:
             next(gen)
         except StopIteration:
             pass  # Expected
-
-    finally:
-        # Restore original engine
-        database.engine = original_engine
-        test_engine.dispose()

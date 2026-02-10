@@ -6,6 +6,8 @@ import pytest
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.testclient import TestClient
 
+from tests.utils.auth import create_auth_header, temporary_valid_tokens
+
 
 @pytest.fixture
 def client_with_auth() -> Generator[TestClient, None, None]:
@@ -13,20 +15,12 @@ def client_with_auth() -> Generator[TestClient, None, None]:
     from app.api.routes import protected
     from app.core import auth
 
-    # Temporarily set valid tokens
-    original_tokens = auth.VALID_API_TOKENS.copy()
-    auth.VALID_API_TOKENS.clear()
-    auth.VALID_API_TOKENS.update({"test-token-123", "another-token"})
+    with temporary_valid_tokens(auth, {"test-token-123", "another-token"}):
+        # Create test app
+        test_app = FastAPI()
+        test_app.include_router(protected.router)
 
-    # Create test app
-    test_app = FastAPI()
-    test_app.include_router(protected.router)
-
-    yield TestClient(test_app)
-
-    # Restore original tokens
-    auth.VALID_API_TOKENS.clear()
-    auth.VALID_API_TOKENS.update(original_tokens)
+        yield TestClient(test_app)
 
 
 @pytest.fixture
@@ -34,24 +28,17 @@ def client_without_auth() -> Generator[TestClient, None, None]:
     """Test client without authentication configured."""
     from app.core import auth
 
-    # Temporarily clear tokens
-    original_tokens = auth.VALID_API_TOKENS.copy()
-    auth.VALID_API_TOKENS.clear()
+    with temporary_valid_tokens(auth, None):
+        # Create test app without protected router (since auth is disabled)
+        test_app = FastAPI()
 
-    # Create test app without protected router (since auth is disabled)
-    test_app = FastAPI()
-
-    yield TestClient(test_app)
-
-    # Restore original tokens
-    auth.VALID_API_TOKENS.clear()
-    auth.VALID_API_TOKENS.update(original_tokens)
+        yield TestClient(test_app)
 
 
 def test_protected_endpoint_with_valid_token(client_with_auth: TestClient) -> None:
     """Test protected endpoint with valid bearer token."""
     response = client_with_auth.get(
-        "/protected/", headers={"Authorization": "Bearer test-token-123"}
+        "/protected/", headers=create_auth_header("test-token-123")
     )
     assert response.status_code == 200
     data = response.json()
@@ -64,7 +51,7 @@ def test_protected_endpoint_with_second_valid_token(
 ) -> None:
     """Test protected endpoint with second valid bearer token."""
     response = client_with_auth.get(
-        "/protected/", headers={"Authorization": "Bearer another-token"}
+        "/protected/", headers=create_auth_header("another-token")
     )
     assert response.status_code == 200
     assert response.json()["authenticated"] == "true"
@@ -81,7 +68,7 @@ def test_protected_endpoint_without_token(client_with_auth: TestClient) -> None:
 def test_protected_endpoint_with_invalid_token(client_with_auth: TestClient) -> None:
     """Test protected endpoint with invalid bearer token."""
     response = client_with_auth.get(
-        "/protected/", headers={"Authorization": "Bearer invalid-token"}
+        "/protected/", headers=create_auth_header("invalid-token")
     )
     assert response.status_code == 403
     assert "Invalid bearer token" in response.json()["detail"]
@@ -100,7 +87,7 @@ def test_protected_endpoint_with_malformed_header(
 def test_protected_data_endpoint(client_with_auth: TestClient) -> None:
     """Test protected data endpoint."""
     response = client_with_auth.get(
-        "/protected/data", headers={"Authorization": "Bearer test-token-123"}
+        "/protected/data", headers=create_auth_header("test-token-123")
     )
     assert response.status_code == 200
     data = response.json()
@@ -122,11 +109,7 @@ def test_auth_not_configured_error() -> None:
     """Test authentication error when tokens are not configured."""
     from app.core import auth
 
-    # Save and clear tokens
-    original_tokens = auth.VALID_API_TOKENS.copy()
-    auth.VALID_API_TOKENS.clear()
-
-    try:
+    with temporary_valid_tokens(auth, None):
         # Create a mock request (minimal scope dict for Request)
         scope = {
             "type": "http",
@@ -142,28 +125,16 @@ def test_auth_not_configured_error() -> None:
 
         assert exc_info.value.status_code == 500
         assert "not configured" in exc_info.value.detail
-    finally:
-        # Restore tokens
-        auth.VALID_API_TOKENS.clear()
-        auth.VALID_API_TOKENS.update(original_tokens)
 
 
 def test_is_auth_enabled() -> None:
     """Test is_auth_enabled function."""
     from app.core import auth
 
-    # Save and clear tokens
-    original_tokens = auth.VALID_API_TOKENS.copy()
-
     # Test with tokens
-    auth.VALID_API_TOKENS.clear()
-    auth.VALID_API_TOKENS.update({"test-token"})
-    assert auth.is_auth_enabled() is True
+    with temporary_valid_tokens(auth, {"test-token"}):
+        assert auth.is_auth_enabled() is True
 
     # Test without tokens
-    auth.VALID_API_TOKENS.clear()
-    assert auth.is_auth_enabled() is False
-
-    # Restore tokens
-    auth.VALID_API_TOKENS.clear()
-    auth.VALID_API_TOKENS.update(original_tokens)
+    with temporary_valid_tokens(auth, None):
+        assert auth.is_auth_enabled() is False

@@ -3,21 +3,24 @@
 Provides bearer token-based authentication via Authorization header.
 """
 
-import os
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from app.core.env import get_env_list
+from app.core.exceptions import (
+    forbidden_exception,
+    internal_server_exception,
+    unauthorized_exception,
+)
 
 # Bearer token security scheme
 bearer_scheme = HTTPBearer(auto_error=False)
 
 # Load API tokens from environment
 # Supports multiple tokens separated by commas
-API_TOKENS_STR = os.getenv("API_TOKENS", "")
-VALID_API_TOKENS = {
-    token.strip() for token in API_TOKENS_STR.split(",") if token.strip()
-}
+VALID_API_TOKENS = set(get_env_list("API_TOKENS"))
 
 
 def get_api_token(
@@ -36,23 +39,13 @@ def get_api_token(
     """
     # If no tokens are configured, authentication is disabled
     if not VALID_API_TOKENS:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Bearer token authentication is not configured",
-        )
+        raise internal_server_exception("Bearer token authentication is not configured")
 
     if not credentials:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing bearer token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise unauthorized_exception("Missing bearer token")
 
     if credentials.credentials not in VALID_API_TOKENS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid bearer token",
-        )
+        raise forbidden_exception("Invalid bearer token")
 
     return credentials.credentials
 

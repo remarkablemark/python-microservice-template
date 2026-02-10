@@ -6,10 +6,45 @@ import os
 import sys
 from collections.abc import Generator
 from io import StringIO
+from typing import Any
 
 import pytest
 
 from app.core.logging_config import JSONFormatter, get_logger, setup_logging
+
+
+def create_test_log_record(
+    level: int = logging.INFO,
+    msg: str = "Test message",
+    exc_info: Any = None,
+    **extra_fields: object,
+) -> logging.LogRecord:
+    """Create a test LogRecord with specified parameters.
+
+    Args:
+        level: Log level (default: logging.INFO)
+        msg: Log message (default: "Test message")
+        exc_info: Exception info tuple (default: None)
+        **extra_fields: Additional fields to add to the record
+
+    Returns:
+        LogRecord instance configured for testing
+    """
+    record = logging.LogRecord(
+        name="test",
+        level=level,
+        pathname="test.py",
+        lineno=10,
+        msg=msg,
+        args=(),
+        exc_info=exc_info,
+    )
+
+    # Add extra fields if provided
+    if extra_fields:
+        record.extra_fields = extra_fields  # type: ignore
+
+    return record
 
 
 @pytest.fixture
@@ -23,15 +58,7 @@ def log_stream() -> Generator[StringIO, None, None]:
 def test_json_formatter_basic() -> None:
     """Test basic JSON formatting of log records."""
     formatter = JSONFormatter()
-    record = logging.LogRecord(
-        name="test",
-        level=logging.INFO,
-        pathname="test.py",
-        lineno=10,
-        msg="Test message",
-        args=(),
-        exc_info=None,
-    )
+    record = create_test_log_record()
 
     result = formatter.format(record)
     log_data = json.loads(result)
@@ -51,14 +78,8 @@ def test_json_formatter_with_exception() -> None:
     try:
         raise ValueError("Test error")
     except ValueError:
-        record = logging.LogRecord(
-            name="test",
-            level=logging.ERROR,
-            pathname="test.py",
-            lineno=10,
-            msg="Error occurred",
-            args=(),
-            exc_info=sys.exc_info(),
+        record = create_test_log_record(
+            level=logging.ERROR, msg="Error occurred", exc_info=sys.exc_info()
         )
 
     result = formatter.format(record)
@@ -120,16 +141,7 @@ def test_logger_json_output(log_stream: StringIO) -> None:
 def test_json_formatter_with_extra_fields() -> None:
     """Test JSON formatting with extra fields."""
     formatter = JSONFormatter()
-    record = logging.LogRecord(
-        name="test",
-        level=logging.INFO,
-        pathname="test.py",
-        lineno=10,
-        msg="Test message",
-        args=(),
-        exc_info=None,
-    )
-    record.extra_fields = {"user_id": 123, "request_id": "abc-123"}  # type: ignore
+    record = create_test_log_record(user_id=123, request_id="abc-123")
 
     result = formatter.format(record)
     log_data = json.loads(result)

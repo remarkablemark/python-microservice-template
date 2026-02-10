@@ -2,9 +2,10 @@ from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel
 
 from app.main import app
+from tests.utils.database import create_test_engine
 
 
 @pytest.fixture(scope="module")
@@ -19,17 +20,11 @@ def db_session() -> Generator[Session, None, None]:
 
     Creates a new in-memory database for each test function.
     """
-    from sqlalchemy.pool import StaticPool
-
     # Import models to ensure they're registered
     from app.models import user  # noqa: F401, F811  # type: ignore[reportUnusedImport]
 
-    # Use in-memory SQLite with StaticPool to ensure single connection
-    engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    # Create test engine using utility
+    engine = create_test_engine()
 
     # Create all tables
     SQLModel.metadata.create_all(engine)

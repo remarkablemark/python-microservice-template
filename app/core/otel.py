@@ -4,8 +4,6 @@ This module provides optional OpenTelemetry instrumentation for the application.
 OpenTelemetry is enabled when OTEL_ENABLED environment variable is set to 'true'.
 """
 
-import os
-
 from opentelemetry import metrics, trace
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -15,6 +13,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
+from app.core.env import get_env_bool, get_env_str
 from app.core.logging_config import get_logger
 from app.core.metadata import PROJECT_NAME
 
@@ -27,7 +26,7 @@ def is_otel_enabled() -> bool:
     Returns:
         True if OTEL_ENABLED is set to 'true' (case-insensitive), False otherwise.
     """
-    return os.getenv("OTEL_ENABLED", "").lower() == "true"
+    return get_env_bool("OTEL_ENABLED")
 
 
 def get_service_name() -> str:
@@ -37,7 +36,7 @@ def get_service_name() -> str:
         Service name from OTEL_SERVICE_NAME environment variable,
         defaults to project name from pyproject.toml.
     """
-    return os.getenv("OTEL_SERVICE_NAME", PROJECT_NAME)
+    return get_env_str("OTEL_SERVICE_NAME", PROJECT_NAME)
 
 
 def get_otel_endpoint() -> str | None:
@@ -47,7 +46,8 @@ def get_otel_endpoint() -> str | None:
         OTLP endpoint URL from OTEL_EXPORTER_OTLP_ENDPOINT environment variable,
         or None if not set.
     """
-    return os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    endpoint = get_env_str("OTEL_EXPORTER_OTLP_ENDPOINT")
+    return endpoint if endpoint else None
 
 
 def setup_opentelemetry() -> None:

@@ -3,14 +3,16 @@
 Database is enabled when DATABASE_URL environment variable is set.
 """
 
-import os
 from collections.abc import Generator
 
 from sqlalchemy import Engine
 from sqlmodel import Session, SQLModel, create_engine
 
+from app.core.env import get_env_bool, get_env_str
+from app.core.exceptions import internal_server_exception
+
 # Optional: Get database URL from environment
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = get_env_str("DATABASE_URL")
 
 # Database is optional - only initialize if DATABASE_URL is set
 engine: Engine | None = None
@@ -23,7 +25,7 @@ if DATABASE_URL:  # pragma: no cover
 
     engine = create_engine(
         DATABASE_URL,
-        echo=os.getenv("DATABASE_ECHO", "").lower() == "true",
+        echo=get_env_bool("DATABASE_ECHO"),
         connect_args=connect_args,
     )
 
@@ -43,12 +45,9 @@ def get_session() -> Generator[Session, None, None]:
     Raises:
         HTTPException: If database is not configured.
     """
-    from fastapi import HTTPException, status
-
     if engine is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database not configured. Set DATABASE_URL environment variable.",
+        raise internal_server_exception(
+            "Database not configured. Set DATABASE_URL environment variable."
         )
 
     with Session(engine) as session:

@@ -12,31 +12,16 @@ from app.core.otel import (
     is_otel_enabled,
     setup_opentelemetry,
 )
+from tests.utils.env import clean_env_vars
 
 
 @pytest.fixture
 def clean_env() -> Generator[None, None, None]:
     """Clean up OpenTelemetry environment variables."""
-    otel_vars = [
-        "OTEL_ENABLED",
-        "OTEL_SERVICE_NAME",
-        "OTEL_EXPORTER_OTLP_ENDPOINT",
-    ]
-    original_values = {var: os.getenv(var) for var in otel_vars}
-
-    # Clear all OTEL env vars
-    for var in otel_vars:
-        if var in os.environ:
-            del os.environ[var]
-
-    yield
-
-    # Restore original values
-    for var, value in original_values.items():
-        if value is not None:
-            os.environ[var] = value
-        elif var in os.environ:
-            del os.environ[var]
+    with clean_env_vars(
+        "OTEL_ENABLED", "OTEL_SERVICE_NAME", "OTEL_EXPORTER_OTLP_ENDPOINT"
+    ):
+        yield
 
 
 def test_is_otel_enabled_default(clean_env: None) -> None:  # noqa: ARG001

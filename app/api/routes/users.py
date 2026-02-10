@@ -4,10 +4,12 @@ This module demonstrates optional database usage.
 These endpoints only work when DATABASE_URL is configured.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
 from app.core.database import get_session
+from app.core.db_utils import get_by_id_or_404
+from app.core.exceptions import bad_request_exception
 from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -26,9 +28,7 @@ def create_user(user: User, session: Session = Depends(get_session)) -> User:
     )
     existing = session.exec(statement).first()
     if existing:
-        raise HTTPException(
-            status_code=400, detail="User with this email or username already exists"
-        )
+        raise bad_request_exception("User with this email or username already exists")
 
     session.add(user)
     session.commit()
@@ -43,10 +43,7 @@ def get_user(user_id: int, session: Session = Depends(get_session)) -> User:
     Raises:
         HTTPException: If user not found.
     """
-    user = session.get(User, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return get_by_id_or_404(session, User, user_id, "User")
 
 
 @router.get("/", response_model=list[User])

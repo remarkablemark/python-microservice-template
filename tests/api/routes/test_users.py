@@ -3,26 +3,53 @@
 from collections.abc import Generator
 
 import pytest
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session
+
+from tests.utils.app_factory import create_test_app_with_database
+
+
+def create_test_user(
+    client: TestClient,
+    email: str,
+    username: str,
+    full_name: str,
+    is_active: bool = True,
+) -> dict[str, object]:
+    """Helper function to create a test user.
+
+    Args:
+        client: TestClient instance
+        email: User email address
+        username: Username
+        full_name: Full name
+        is_active: Whether user is active (default: True)
+
+    Returns:
+        JSON response data from user creation
+    """
+    response = client.post(
+        "/users/",
+        json={
+            "email": email,
+            "username": username,
+            "full_name": full_name,
+            "is_active": is_active,
+        },
+    )
+    return response.json()
 
 
 @pytest.fixture
 def client_with_db(db_session: Session) -> Generator[TestClient, None, None]:
     """Test client with database enabled."""
     from app.api.routes import users
-    from app.core import database
 
-    # Create a test app with users router included
-    test_app = FastAPI()
-    test_app.include_router(users.router)
+    # Create test app with database and users router
+    test_app = create_test_app_with_database(
+        db_session, include_routers=[(users.router, {})]
+    )
 
-    # Override get_session to use test session
-    def get_test_session():
-        yield db_session
-
-    test_app.dependency_overrides[database.get_session] = get_test_session
     yield TestClient(test_app)
     test_app.dependency_overrides.clear()
 
@@ -47,49 +74,33 @@ def test_create_user(client_with_db: TestClient) -> None:
     assert "id" in data
 
 
-def test_create_duplicate_user_email(client_with_db: TestClient) -> None:
-    """Test creating a user with duplicate email."""
+@pytest.mark.parametrize(
+    ("first_email", "first_username", "second_email", "second_username"),
+    [
+        # Duplicate email
+        ("duplicate@example.com", "user1", "duplicate@example.com", "user2"),
+        # Duplicate username
+        ("user1@example.com", "duplicateuser", "user2@example.com", "duplicateuser"),
+    ],
+    ids=["duplicate_email", "duplicate_username"],
+)
+def test_create_duplicate_user(
+    client_with_db: TestClient,
+    first_email: str,
+    first_username: str,
+    second_email: str,
+    second_username: str,
+) -> None:
+    """Test creating a user with duplicate email or username."""
     # Create first user
-    client_with_db.post(
-        "/users/",
-        json={
-            "email": "duplicate@example.com",
-            "username": "user1",
-            "full_name": "User One",
-        },
-    )
+    create_test_user(client_with_db, first_email, first_username, "User One")
 
-    # Try to create user with same email
+    # Try to create user with duplicate field
     response = client_with_db.post(
         "/users/",
         json={
-            "email": "duplicate@example.com",
-            "username": "user2",
-            "full_name": "User Two",
-        },
-    )
-    assert response.status_code == 400
-    assert "already exists" in response.json()["detail"]
-
-
-def test_create_duplicate_user_username(client_with_db: TestClient) -> None:
-    """Test creating a user with duplicate username."""
-    # Create first user
-    client_with_db.post(
-        "/users/",
-        json={
-            "email": "user1@example.com",
-            "username": "duplicateuser",
-            "full_name": "User One",
-        },
-    )
-
-    # Try to create user with same username
-    response = client_with_db.post(
-        "/users/",
-        json={
-            "email": "user2@example.com",
-            "username": "duplicateuser",
+            "email": second_email,
+            "username": second_username,
             "full_name": "User Two",
         },
     )
@@ -100,15 +111,10 @@ def test_create_duplicate_user_username(client_with_db: TestClient) -> None:
 def test_get_user(client_with_db: TestClient) -> None:
     """Test getting a user by ID."""
     # Create user
-    create_response = client_with_db.post(
-        "/users/",
-        json={
-            "email": "getuser@example.com",
-            "username": "getuser",
-            "full_name": "Get User",
-        },
+    user_data = create_test_user(
+        client_with_db, "getuser@example.com", "getuser", "Get User"
     )
-    user_id = create_response.json()["id"]
+    user_id = user_data["id"]
 
     # Get user
     response = client_with_db.get(f"/users/{user_id}")
@@ -128,18 +134,10 @@ def test_get_nonexistent_user(client_with_db: TestClient) -> None:
 def test_list_users(client_with_db: TestClient) -> None:
     """Test listing all users."""
     # Create multiple users
-    client_with_db.post(
-        "/users/",
-        json={"email": "user1@example.com", "username": "user1", "full_name": "User 1"},
-    )
-    client_with_db.post(
-        "/users/",
-        json={"email": "user2@example.com", "username": "user2", "full_name": "User 2"},
-    )
-    client_with_db.post(
-        "/users/",
-        json={"email": "user3@example.com", "username": "user3", "full_name": "User 3"},
-    )
+    for i in range(1, 4):
+        create_test_user(
+            client_with_db, f"user{i}@example.com", f"user{i}", f"User {i}"
+        )
 
     # List users
     response = client_with_db.get("/users/")
@@ -153,13 +151,8 @@ def test_list_users_with_pagination(client_with_db: TestClient) -> None:
     """Test listing users with pagination."""
     # Create multiple users
     for i in range(5):
-        client_with_db.post(
-            "/users/",
-            json={
-                "email": f"page{i}@example.com",
-                "username": f"pageuser{i}",
-                "full_name": f"Page User {i}",
-            },
+        create_test_user(
+            client_with_db, f"page{i}@example.com", f"pageuser{i}", f"Page User {i}"
         )
 
     # Test skip and limit

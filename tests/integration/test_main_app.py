@@ -5,8 +5,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy.pool import StaticPool
-from sqlmodel import Session, create_engine
+from sqlmodel import Session
+
+from tests.utils.auth import create_auth_header, temporary_valid_tokens
+from tests.utils.database import temporary_test_engine
 
 
 def test_app_with_database_enabled() -> None:
@@ -14,20 +16,7 @@ def test_app_with_database_enabled() -> None:
     from app.api.routes import healthcheck, items, users
     from app.core import database
 
-    # Create test engine
-    test_engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    # Save original engine
-    original_engine = database.engine
-
-    try:
-        # Set test engine
-        database.engine = test_engine
-
+    with temporary_test_engine(database):
         # Create test app with lifespan
         @asynccontextmanager
         async def test_lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
@@ -48,25 +37,13 @@ def test_app_with_database_enabled() -> None:
             response = client.get("/healthcheck")
             assert response.status_code == 200
 
-    finally:
-        # Restore original engine
-        database.engine = original_engine
-        test_engine.dispose()
-
 
 def test_app_with_auth_enabled() -> None:
     """Test app with authentication enabled."""
     from app.api.routes import healthcheck, items, protected
     from app.core import auth
 
-    # Save original tokens
-    original_tokens = auth.VALID_API_TOKENS.copy()
-
-    try:
-        # Set test tokens
-        auth.VALID_API_TOKENS.clear()
-        auth.VALID_API_TOKENS.update({"test-token"})
-
+    with temporary_valid_tokens(auth, {"test-token"}):
         # Create test app
         test_app = FastAPI()
         test_app.include_router(healthcheck.router)
@@ -80,34 +57,16 @@ def test_app_with_auth_enabled() -> None:
         with TestClient(test_app) as client:
             # Verify protected endpoint is available
             response = client.get(
-                "/protected/", headers={"Authorization": "Bearer test-token"}
+                "/protected/", headers=create_auth_header("test-token")
             )
             assert response.status_code == 200
-
-    finally:
-        # Restore original tokens
-        auth.VALID_API_TOKENS.clear()
-        auth.VALID_API_TOKENS.update(original_tokens)
 
 
 def test_database_create_with_engine() -> None:
     """Test create_db_and_tables when engine is configured."""
-    from app.core import database  # noqa: F401, F811
+    from app.core import database
 
-    # Create test engine
-    test_engine = create_engine(
-        "sqlite:///:memory:",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-
-    # Save original engine
-    original_engine = database.engine
-
-    try:
-        # Set test engine
-        database.engine = test_engine
-
+    with temporary_test_engine(database) as test_engine:
         # Create tables
         database.create_db_and_tables()
 
@@ -119,11 +78,6 @@ def test_database_create_with_engine() -> None:
 
             result = session.exec(select(User)).all()
             assert isinstance(result, list)
-
-    finally:
-        # Restore original engine
-        database.engine = original_engine
-        test_engine.dispose()
 
 
 def test_database_with_postgresql_connection_args() -> None:

@@ -5,11 +5,12 @@ Provides standardized JSON logging setup with configurable log levels.
 
 import json
 import logging
-import os
 import sys
 import traceback
 from datetime import datetime, timezone
 from typing import Any
+
+from app.core.env import get_env_str
 
 
 class JSONFormatter(logging.Formatter):
@@ -60,7 +61,7 @@ def setup_logging() -> logging.Logger:
     Returns:
         Configured logger instance.
     """
-    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+    log_level = get_env_str("LOG_LEVEL", "INFO").upper()
 
     # Create JSON formatter
     json_formatter = JSONFormatter()
