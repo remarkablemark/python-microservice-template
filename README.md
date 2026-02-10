@@ -8,6 +8,9 @@
 
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Uvicorn](https://uvicorn.dev/)
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [Alembic](https://alembic.sqlalchemy.org/)
+- [OpenTelemetry](https://opentelemetry.io/)
 
 ## Prerequisites
 
