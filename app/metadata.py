@@ -1,6 +1,7 @@
 """Project metadata loaded from pyproject.toml."""
 
 from pathlib import Path
+
 from tomllib import load
 
 # Load project metadata from pyproject.toml

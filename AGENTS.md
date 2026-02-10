@@ -42,22 +42,16 @@ uv run coverage html
 ### Linting & Formatting
 
 ```bash
-# Format code
-uv run black .
+# Format code and sort imports
+uv run ruff format
 
 # Check formatting without changing files
-uv run black --check .
+uv run ruff format --check
 
-# Check imports without changing files
-uv run isort --check-only .
-
-# Sort imports
-uv run isort .
-
-# Lint code
+# Lint code (includes import sorting check)
 uv run ruff check
 
-# Auto-fix linting issues
+# Auto-fix linting issues (includes import sorting)
 uv run ruff check --fix
 
 # Type checking with pyright
@@ -108,7 +102,7 @@ uv run alembic current
 
 - Use `collections.abc` for collection abstract base classes
 - Standard library imports first, then third-party, then local imports
-- Use `isort` to maintain consistent import ordering
+- Use Ruff's import sorting to maintain consistent import ordering
 - Use absolute imports for local modules (e.g., `from app.main import app`)
 
 ### Type Annotations
@@ -151,7 +145,7 @@ uv run alembic current
 - Use Alembic for database migrations
 - Follow naming convention: model classes are singular (e.g., `User`, not `Users`)
 - Database session dependency: `from app.database import get_session`
-- Migration files are auto-formatted with Black and Ruff via post-write hooks
+- Migration files are auto-formatted with Ruff via post-write hooks
 
 ### Logging
 
@@ -183,7 +177,7 @@ uv run alembic current
 
 ### Code Quality Rules
 
-- Maximum line length: 88 characters (Black default)
+- Maximum line length: 88 characters
 - No unused function arguments (ARG001 ruff rule)
 - Use pyupgrade-compatible code (UP ruff rules)
 - Prefer comprehensions over loops where appropriate (C4 ruff rule)
@@ -210,7 +204,6 @@ uv run alembic current
 
 ### Performance Guidelines
 
-- Use fast=True for Black formatting
 - Use uv for fast dependency management
 - Enable coverage dynamic context for better test insights
 
@@ -316,7 +309,7 @@ tests/
 
 ## Key Configuration Files
 
-- `pyproject.toml`: Main project configuration, tool settings (Black, isort, Ruff, Pyright, Coverage, MyPy)
+- `pyproject.toml`: Main project configuration, tool settings (Ruff, Pyright, Coverage, MyPy)
 - `.pre-commit-config.yaml`: Pre-commit hooks configuration
 - `uv.lock`: Dependency lock file (do not edit manually)
 - `.env`: Environment variables (not in version control, copy from `.env.example`)
@@ -324,21 +317,13 @@ tests/
 
 ## Tool Configuration
 
-### Black
-
-- Line length: 88 characters (default)
-- Fast mode enabled
-
-### isort
-
-- Profile: black (compatible with Black formatting)
-- Line length: 88 characters
-
 ### Ruff
 
-- Target: Python 3.10+
-- Selected rules: pycodestyle, pyflakes, flake8-bugbear, comprehensions, pyupgrade
-- Enforces: no unused arguments, no print statements, proper exception handling
+- **Formatting**: Black-compatible code formatter with 88 character line length
+- **Import sorting**: Replaces isort, maintains standard library → third-party → local import order
+- **Linting**: Target Python 3.10+
+- **Selected rules**: pycodestyle, pyflakes, isort, flake8-bugbear, comprehensions, pyupgrade
+- **Enforces**: no unused arguments, no print statements, proper exception handling, sorted imports
 
 ### Pyright
 
@@ -373,9 +358,7 @@ The microservice supports optional features that can be enabled via environment 
 
 The project enforces strict code quality standards:
 
-- **Black** - Code formatting with 88 character line length
-- **isort** - Import sorting and organization
-- **Ruff** - Fast Python linting with auto-fix support
+- **Ruff** - Fast Python formatter, import sorter, and linter (replaces Black + isort + Flake8)
 - **Pyright** - Strict type checking for `app/` directory
 - **Coverage** - 100% test coverage enforced via `fail_under = 100`
 - **Pre-commit hooks** - Automatically run checks before each commit
@@ -384,8 +367,7 @@ All checks must pass before code can be merged:
 
 ```bash
 # Run all quality checks
-uv run black --check .
-uv run isort --check-only .
+uv run ruff format --check
 uv run ruff check
 uv run pyright
 uv run coverage run -m pytest && uv run coverage report

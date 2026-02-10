@@ -142,17 +142,17 @@ Alternatively, run with uvicorn directly:
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### `uv run black .`
+### `uv run ruff format`
 
-Formats the code.
-
-### `uv run isort .`
-
-Sorts and organizes imports.
+Formats the code (replaces Black).
 
 ### `uv run ruff check`
 
-Lints the code.
+Lints the code and checks import sorting (replaces isort).
+
+### `uv run ruff check --fix`
+
+Auto-fixes linting issues and sorts imports.
 
 ### `uv run coverage run -m pytest && uv run coverage report`
 

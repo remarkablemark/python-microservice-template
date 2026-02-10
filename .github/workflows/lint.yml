@@ -24,10 +24,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --all-extras --dev
 
-      - name: Run Black
-        run: uv run black --check .
+      - name: Run Ruff format check
+        run: uv run ruff format --check
 
-      - name: Run Ruff
+      - name: Run Ruff lint
         run: uv run ruff check
 
       - name: Run pre-commit
