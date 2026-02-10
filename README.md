@@ -4,7 +4,10 @@
 [![test](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml)
 [![lint](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml)
 
-⚡ [FastAPI](https://fastapi.tiangolo.com/) template inspired by [Full Stack FastAPI Template](https://fastapi.tiangolo.com/project-generation/).
+🐍 Python microservice template built with:
+
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Uvicorn](https://uvicorn.dev/)
 
 ## Prerequisites
 
