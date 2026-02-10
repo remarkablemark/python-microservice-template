@@ -110,8 +110,6 @@ uv run alembic current
 - Standard library imports first, then third-party, then local imports
 - Use `isort` to maintain consistent import ordering
 - Use absolute imports for local modules (e.g., `from app.main import app`)
-- Use `# isort: skip` to skip sorting for specific import lines (e.g., when models need to be imported for side effects)
-- Use `# isort: skip_file` at the top of a file to skip the entire file
 
 ### Type Annotations
 
@@ -202,7 +200,6 @@ uv run alembic current
 - **100% test coverage is enforced** - `fail_under = 100` in pyproject.toml
 - Use `# pragma: no cover` for lines that are impossible/impractical to test (e.g., module-level initialization based on environment variables)
 - Add type hints for test fixtures to avoid pyright errors: `-> Generator[TestClient, None, None]`
-- Use `# isort: skip` for imports that need specific ordering (e.g., model imports for SQLAlchemy registration)
 
 ### Documentation
 
@@ -365,7 +362,7 @@ The microservice supports optional features that can be enabled via environment 
    - Automatic instrumentation of FastAPI endpoints
    - Exports traces and metrics to OTLP-compatible backends (Jaeger, Grafana, Datadog, etc.)
    - Configured via `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable
-   - Service name customizable via `OTEL_SERVICE_NAME` (defaults to 'python-microservice-template')
+   - Service name customizable via `OTEL_SERVICE_NAME` (defaults to project name from pyproject.toml)
 
 ## Code Quality Standards
 

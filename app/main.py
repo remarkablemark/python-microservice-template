@@ -9,6 +9,7 @@ from app.database import create_db_and_tables, engine
 from app.healthcheck import router as healthcheck_router
 from app.items import router as items_router
 from app.logging_config import get_logger
+from app.metadata import PROJECT_DESCRIPTION, PROJECT_NAME, PROJECT_VERSION
 from app.otel import is_otel_enabled, setup_opentelemetry
 from app.protected import router as protected_router
 from app.users import router as users_router
@@ -34,7 +35,12 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Application shutdown")
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title=PROJECT_NAME,
+    version=PROJECT_VERSION,
+    description=PROJECT_DESCRIPTION,
+    lifespan=lifespan,
+)
 
 # Optional: Instrument FastAPI with OpenTelemetry if enabled
 if is_otel_enabled():  # pragma: no cover

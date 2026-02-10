@@ -47,10 +47,7 @@ def test_create_db_and_tables() -> None:
     """Test create_db_and_tables function."""
     from sqlalchemy.pool import StaticPool
 
-    # isort: off
     from app import models  # noqa: F401, F811  # type: ignore[reportUnusedImport]
-
-    # isort: on
 
     # Create a test engine
     test_engine = create_engine(

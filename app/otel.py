@@ -16,6 +16,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from app.logging_config import get_logger
+from app.metadata import PROJECT_NAME
 
 logger = get_logger(__name__)
 
@@ -34,9 +35,9 @@ def get_service_name() -> str:
 
     Returns:
         Service name from OTEL_SERVICE_NAME environment variable,
-        defaults to 'python-microservice-template'.
+        defaults to project name from pyproject.toml.
     """
-    return os.getenv("OTEL_SERVICE_NAME", "python-microservice-template")
+    return os.getenv("OTEL_SERVICE_NAME", PROJECT_NAME)
 
 
 def get_otel_endpoint() -> str | None:
