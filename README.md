@@ -29,6 +29,41 @@ Install the dependencies:
 uv sync
 ```
 
+## Authentication
+
+The microservice supports optional bearer token authentication.
+
+### Enable Authentication
+
+Copy the example environment file and configure your API tokens:
+
+```sh
+cp .env.example .env
+```
+
+Edit `.env` and set your bearer tokens:
+
+```sh
+# Single token
+API_TOKENS=your-secret-token-here
+
+# Multiple tokens (comma-separated)
+API_TOKENS=token-1,token-2,token-3
+```
+
+### Using Protected Endpoints
+
+Protected endpoints require an `Authorization` header with a bearer token:
+
+```sh
+curl -H "Authorization: Bearer your-secret-token-here" \
+  http://127.0.0.1:8000/protected/
+```
+
+When authentication is enabled, the `/protected` endpoints will be available at:
+- `GET /protected/` - Basic protected endpoint
+- `GET /protected/data` - Protected endpoint with data
+
 ## Database
 
 The microservice supports optional database integration using SQLModel and Alembic.

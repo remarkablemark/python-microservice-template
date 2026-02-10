@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Script to test database functionality
 
 set -e

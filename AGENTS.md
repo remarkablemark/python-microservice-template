@@ -13,8 +13,9 @@ uv sync
 # Install pre-commit hooks
 uv run pre-commit install
 
-# Optional: Set up database (copy .env.example to .env and configure DATABASE_URL)
+# Optional: Set up environment variables (database, authentication, etc.)
 cp .env.example .env
+# Edit .env to configure DATABASE_URL and/or API_TOKENS
 ```
 
 ## Build/Lint/Test Commands
@@ -131,6 +132,15 @@ uv run alembic current
 - Keep Pydantic models simple and focused
 - Return types should be explicit in route handlers
 
+### Authentication (Optional)
+
+- Bearer token authentication is optional and controlled by `API_TOKENS` environment variable
+- When enabled, protected endpoints require `Authorization: Bearer <token>` header
+- Supports multiple tokens (comma-separated in environment variable)
+- Protected routers are only included if authentication is enabled
+- Use `BearerToken` dependency for protected endpoints: `from app.auth import BearerToken`
+- Example: `def protected_endpoint(token: BearerToken) -> dict[str, str]:`
+
 ### Database (Optional)
 
 - Database integration is optional and controlled by `DATABASE_URL` environment variable
@@ -184,8 +194,11 @@ uv run alembic current
 app/
 ├── __init__.py
 ├── main.py          # FastAPI app initialization and router includes
+├── auth.py          # Optional bearer token authentication
+├── protected.py     # Protected endpoints (requires auth)
 ├── database.py      # Optional database configuration
 ├── models.py        # SQLModel database models (example)
+├── users.py         # User CRUD endpoints (requires database)
 ├── healthcheck.py   # Health check endpoints
 └── items.py         # Item-related endpoints
 
@@ -208,6 +221,19 @@ tests/
 - `uv.lock`: Dependency lock file (do not edit manually)
 - `.env`: Environment variables (not in version control, copy from `.env.example`)
 - `alembic.ini`: Alembic migration configuration
+
+## Optional Features
+
+The microservice supports optional features that can be enabled via environment variables:
+
+1. **Authentication** - Set `API_TOKENS` to enable bearer token authentication
+   - Protected endpoints will only be included if tokens are configured
+   - Multiple tokens can be comma-separated
+
+2. **Database** - Set `DATABASE_URL` to enable database support
+   - Database-dependent routers (like `/users`) only load if DB is configured
+   - Supports PostgreSQL (production) and SQLite (development)
+   - Migrations managed with Alembic
 
 ## Notes
 

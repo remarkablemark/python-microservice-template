@@ -3,9 +3,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.auth import is_auth_enabled
 from app.database import create_db_and_tables, engine
 from app.healthcheck import router as healthcheck_router
 from app.items import router as items_router
+from app.protected import router as protected_router
 from app.users import router as users_router
 
 
@@ -26,6 +28,10 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(healthcheck_router)
 app.include_router(items_router)
+
+# Optional: Include protected routers if auth is enabled
+if is_auth_enabled():
+    app.include_router(protected_router)
 
 # Optional: Include database-dependent routers if database is configured
 if engine is not None:
