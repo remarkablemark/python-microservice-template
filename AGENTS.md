@@ -67,8 +67,14 @@ uv run pre-commit run --all-files
 # Run in development mode (with auto-reload)
 uv run fastapi dev
 
+# Alternative: Run with uvicorn directly (development)
+uv run uvicorn app.main:app --reload
+
 # Run in production mode
 uv run fastapi run
+
+# Alternative: Run with uvicorn directly (production)
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ## Code Style Guidelines

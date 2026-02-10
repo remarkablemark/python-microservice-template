@@ -42,9 +42,21 @@ Runs the app in development mode:
 
 The server will reload if you make edits.
 
+Alternatively, run with uvicorn directly:
+
+```sh
+uv run uvicorn app.main:app --reload
+```
+
 ### `uv run fastapi run`
 
 Runs the app in production mode.
+
+Alternatively, run with uvicorn directly:
+
+```sh
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
 
 ### `uv run pre-commit install`
 
