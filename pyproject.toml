@@ -37,6 +37,10 @@ Issues = "https://github.com/remarkablemark/python-microservice-template/issues"
 [tool.black]
 fast = true
 
+[tool.isort]
+profile = "black"
+line_length = 88
+
 [tool.mypy]
 strict = true
 exclude = ["venv", ".venv", "alembic"]
@@ -75,6 +79,7 @@ dynamic_context = "test_function"
 [tool.coverage.report]
 show_missing = true
 sort = "-Cover"
+fail_under = 100
 
 [tool.coverage.html]
 show_contexts = true
