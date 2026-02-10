@@ -36,7 +36,7 @@ uv sync
 
 The microservice supports optional bearer token authentication.
 
-### Enable Authentication
+### Environment Variables
 
 Copy the example environment file and configure your API tokens:
 
@@ -54,7 +54,7 @@ API_TOKENS=your-secret-token-here
 API_TOKENS=token-1,token-2,token-3
 ```
 
-### Using Protected Endpoints
+### Protected Endpoints
 
 Protected endpoints require an `Authorization` header with a bearer token:
 
