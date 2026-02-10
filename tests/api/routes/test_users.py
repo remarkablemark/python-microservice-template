@@ -11,7 +11,8 @@ from sqlmodel import Session
 @pytest.fixture
 def client_with_db(db_session: Session) -> Generator[TestClient, None, None]:
     """Test client with database enabled."""
-    from app import database, users
+    from app.api.routes import users
+    from app.core import database
 
     # Create a test app with users router included
     test_app = FastAPI()

@@ -134,7 +134,7 @@ uv run alembic current
 - When enabled, protected endpoints require `Authorization: Bearer <token>` header
 - Supports multiple tokens (comma-separated in environment variable)
 - Protected routers are only included if authentication is enabled
-- Use `BearerToken` dependency for protected endpoints: `from app.auth import BearerToken`
+- Use `BearerToken` dependency for protected endpoints: `from app.core.auth import BearerToken`
 - Example: `def protected_endpoint(token: BearerToken) -> dict[str, str]:`
 
 ### Database (Optional)
@@ -144,7 +144,7 @@ uv run alembic current
 - All SQLModel models should inherit from `SQLModel` with `table=True`
 - Use Alembic for database migrations
 - Follow naming convention: model classes are singular (e.g., `User`, not `Users`)
-- Database session dependency: `from app.database import get_session`
+- Database session dependency: `from app.core.database import get_session`
 - Migration files are auto-formatted with Ruff via post-write hooks
 
 ### Logging
@@ -152,7 +152,7 @@ uv run alembic current
 - Structured JSON logging is configured by default for better log aggregation and parsing
 - Log level can be controlled via `LOG_LEVEL` environment variable (defaults to `INFO`)
 - Supported log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
-- Get a logger for your module: `from app.logging_config import get_logger; logger = get_logger(__name__)`
+- Get a logger for your module: `from app.core.logging_config import get_logger; logger = get_logger(__name__)`
 - All logs are output in JSON format with timestamp, level, logger name, message, and source location
 - HTTP request/response middleware automatically logs all API requests
 - Startup and shutdown events are logged
@@ -166,7 +166,7 @@ uv run alembic current
 - Service name can be customized via `OTEL_SERVICE_NAME` (defaults to `python-microservice-template`)
 - Supports any OTLP-compatible backend: Jaeger, Grafana Cloud, Datadog, Honeycomb, etc.
 - Initialization happens during application startup in `lifespan` handler
-- Use `from app.otel import is_otel_enabled` to check if OpenTelemetry is enabled
+- Use `from app.core.otel import is_otel_enabled` to check if OpenTelemetry is enabled
 - Logs warnings if enabled but endpoint is not configured
 
 ### Error Handling
@@ -282,16 +282,25 @@ BREAKING CHANGE: User.id is now UUID instead of int
 ```
 app/
 ├── __init__.py
-├── main.py          # FastAPI app initialization and router includes
-├── auth.py          # Optional bearer token authentication
-├── protected.py     # Protected endpoints (requires auth)
-├── database.py      # Optional database configuration
-├── models.py        # SQLModel database models (example)
-├── users.py         # User CRUD endpoints (requires database)
-├── healthcheck.py   # Health check endpoints
-├── items.py         # Item-related endpoints
-├── logging_config.py # JSON logging configuration
-└── otel.py          # Optional OpenTelemetry instrumentation
+├── main.py              # FastAPI app initialization and router includes
+├── api/
+│   ├── __init__.py
+│   └── routes/
+│       ├── __init__.py
+│       ├── healthcheck.py  # Health check endpoints
+│       ├── items.py        # Item-related endpoints
+│       ├── protected.py    # Protected endpoints (requires auth)
+│       └── users.py        # User CRUD endpoints (requires database)
+├── core/
+│   ├── __init__.py
+│   ├── auth.py          # Optional bearer token authentication
+│   ├── database.py      # Optional database configuration
+│   ├── logging_config.py # JSON logging configuration
+│   ├── metadata.py      # Project metadata
+│   └── otel.py          # Optional OpenTelemetry instrumentation
+└── models/
+    ├── __init__.py
+    └── user.py          # SQLModel database models (example)
 
 alembic/
 ├── versions/        # Database migration files
@@ -299,12 +308,25 @@ alembic/
 
 tests/
 ├── __init__.py
-├── conftest.py      # Pytest fixtures
-├── test_main.py     # Main app tests
-├── test_healthcheck.py  # Health check tests
-├── test_items.py    # Item endpoints tests
-├── test_logging_config.py  # Logging configuration tests
-└── test_otel.py     # OpenTelemetry configuration tests
+├── conftest.py          # Pytest fixtures
+├── test_main.py         # Main app tests
+├── api/
+│   ├── __init__.py
+│   └── routes/
+│       ├── __init__.py
+│       ├── test_healthcheck.py  # Health check tests
+│       ├── test_items.py        # Item endpoints tests
+│       └── test_users.py        # User CRUD tests
+├── core/
+│   ├── __init__.py
+│   ├── test_auth.py             # Authentication tests
+│   ├── test_database.py         # Database configuration tests
+│   ├── test_logging_config.py   # Logging configuration tests
+│   └── test_otel.py             # OpenTelemetry configuration tests
+└── integration/
+    ├── __init__.py
+    ├── test_main_app.py     # Integration tests
+    └── generate_openapi.py  # OpenAPI spec generator
 ```
 
 ## Key Configuration Files

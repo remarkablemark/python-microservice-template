@@ -7,8 +7,8 @@ These endpoints only work when DATABASE_URL is configured.
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.database import get_session
-from app.models import User
+from app.core.database import get_session
+from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["users"])
 

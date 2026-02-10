@@ -4,15 +4,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor  # type: ignore
 
-from app.auth import is_auth_enabled
-from app.database import create_db_and_tables, engine
-from app.healthcheck import router as healthcheck_router
-from app.items import router as items_router
-from app.logging_config import get_logger
-from app.metadata import PROJECT_DESCRIPTION, PROJECT_NAME, PROJECT_VERSION
-from app.otel import is_otel_enabled, setup_opentelemetry
-from app.protected import router as protected_router
-from app.users import router as users_router
+from app.api.routes.healthcheck import router as healthcheck_router
+from app.api.routes.items import router as items_router
+from app.api.routes.protected import router as protected_router
+from app.api.routes.users import router as users_router
+from app.core.auth import is_auth_enabled
+from app.core.database import create_db_and_tables, engine
+from app.core.logging_config import get_logger
+from app.core.metadata import PROJECT_DESCRIPTION, PROJECT_NAME, PROJECT_VERSION
+from app.core.otel import is_otel_enabled, setup_opentelemetry
 
 logger = get_logger(__name__)
 

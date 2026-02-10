@@ -11,7 +11,8 @@ from sqlmodel import Session, create_engine
 
 def test_app_with_database_enabled() -> None:
     """Test app lifespan with database enabled."""
-    from app import database, healthcheck, items, users
+    from app.api.routes import healthcheck, items, users
+    from app.core import database
 
     # Create test engine
     test_engine = create_engine(
@@ -55,7 +56,8 @@ def test_app_with_database_enabled() -> None:
 
 def test_app_with_auth_enabled() -> None:
     """Test app with authentication enabled."""
-    from app import auth, healthcheck, items, protected
+    from app.api.routes import healthcheck, items, protected
+    from app.core import auth
 
     # Save original tokens
     original_tokens = auth.VALID_API_TOKENS.copy()
@@ -90,7 +92,7 @@ def test_app_with_auth_enabled() -> None:
 
 def test_database_create_with_engine() -> None:
     """Test create_db_and_tables when engine is configured."""
-    from app import database  # noqa: F401, F811
+    from app.core import database  # noqa: F401, F811
 
     # Create test engine
     test_engine = create_engine(
@@ -113,7 +115,7 @@ def test_database_create_with_engine() -> None:
         with Session(test_engine) as session:
             from sqlmodel import select
 
-            from app.models import User
+            from app.models.user import User
 
             result = session.exec(select(User)).all()
             assert isinstance(result, list)
@@ -126,7 +128,7 @@ def test_database_create_with_engine() -> None:
 
 def test_database_with_postgresql_connection_args() -> None:
     """Test database initialization with PostgreSQL (connection args logic)."""
-    from app import database
+    from app.core import database
 
     # Save original engine
     original_engine = database.engine

@@ -15,8 +15,8 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from app.logging_config import get_logger
-from app.metadata import PROJECT_NAME
+from app.core.logging_config import get_logger
+from app.core.metadata import PROJECT_NAME
 
 logger = get_logger(__name__)
 

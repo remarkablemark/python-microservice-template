@@ -5,7 +5,7 @@ Demonstrates bearer token authentication usage.
 
 from fastapi import APIRouter
 
-from app.auth import BearerToken
+from app.core.auth import BearerToken
 
 router = APIRouter(prefix="/protected", tags=["protected"])
 

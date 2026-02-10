@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.otel import (
+from app.core.otel import (
     get_otel_endpoint,
     get_service_name,
     is_otel_enabled,
@@ -93,7 +93,7 @@ def test_get_otel_endpoint_custom(clean_env: None) -> None:  # noqa: ARG001
     assert get_otel_endpoint() == "http://localhost:4317"
 
 
-@patch("app.otel.logger")
+@patch("app.core.otel.logger")
 def test_setup_opentelemetry_disabled(
     mock_logger: MagicMock,
     clean_env: None,  # noqa: ARG001
@@ -103,7 +103,7 @@ def test_setup_opentelemetry_disabled(
     mock_logger.info.assert_called_once_with("OpenTelemetry is disabled")
 
 
-@patch("app.otel.logger")
+@patch("app.core.otel.logger")
 def test_setup_opentelemetry_no_endpoint(
     mock_logger: MagicMock,
     clean_env: None,  # noqa: ARG001
@@ -117,9 +117,9 @@ def test_setup_opentelemetry_no_endpoint(
     assert "OTEL_EXPORTER_OTLP_ENDPOINT is not set" in warning_msg
 
 
-@patch("app.otel.metrics.set_meter_provider")
-@patch("app.otel.trace.set_tracer_provider")
-@patch("app.otel.logger")
+@patch("app.core.otel.metrics.set_meter_provider")
+@patch("app.core.otel.trace.set_tracer_provider")
+@patch("app.core.otel.logger")
 def test_setup_opentelemetry_with_endpoint(
     mock_logger: MagicMock,
     mock_set_tracer: MagicMock,
@@ -147,9 +147,9 @@ def test_setup_opentelemetry_with_endpoint(
     mock_set_meter.assert_called_once()
 
 
-@patch("app.otel.metrics.set_meter_provider")
-@patch("app.otel.trace.set_tracer_provider")
-@patch("app.otel.logger")
+@patch("app.core.otel.metrics.set_meter_provider")
+@patch("app.core.otel.trace.set_tracer_provider")
+@patch("app.core.otel.logger")
 def test_setup_opentelemetry_default_service_name(
     mock_logger: MagicMock,
     _mock_set_tracer: MagicMock,

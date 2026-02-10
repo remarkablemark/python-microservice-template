@@ -22,7 +22,7 @@ def db_session() -> Generator[Session, None, None]:
     from sqlalchemy.pool import StaticPool
 
     # Import models to ensure they're registered
-    from app import models  # noqa: F401, F811  # type: ignore[reportUnusedImport]
+    from app.models import user  # noqa: F401, F811  # type: ignore[reportUnusedImport]
 
     # Use in-memory SQLite with StaticPool to ensure single connection
     engine = create_engine(

@@ -4,14 +4,14 @@ import pytest
 from fastapi import HTTPException
 from sqlmodel import Session, create_engine, select
 
-from app.database import create_db_and_tables, get_session
+from app.core.database import create_db_and_tables, get_session
 
 
 def test_database_not_configured() -> None:
     """Test that database session raises error when not configured."""
     # The current app has no DATABASE_URL set by default
     # So calling get_session should raise an error
-    from app import database
+    from app.core import database
 
     # Save current engine
     original_engine = database.engine
@@ -36,7 +36,7 @@ def test_database_create_tables(db_session: Session) -> None:
     # Query should work without errors
     from sqlmodel import select
 
-    from app.models import User
+    from app.models.user import User
 
     statement = select(User)
     result = db_session.exec(statement).all()
@@ -47,7 +47,7 @@ def test_create_db_and_tables() -> None:
     """Test create_db_and_tables function."""
     from sqlalchemy.pool import StaticPool
 
-    from app import models  # noqa: F401, F811  # type: ignore[reportUnusedImport]
+    from app.models import user  # noqa: F401, F811  # type: ignore[reportUnusedImport]
 
     # Create a test engine
     test_engine = create_engine(
@@ -57,7 +57,7 @@ def test_create_db_and_tables() -> None:
     )
 
     # Save current engine
-    from app import database
+    from app.core import database
 
     original_engine = database.engine
     try:
@@ -69,7 +69,7 @@ def test_create_db_and_tables() -> None:
 
         # Verify tables exist by creating a session and querying
         with Session(test_engine) as session:
-            from app.models import User
+            from app.models.user import User
 
             statement = select(User)
             result = session.exec(statement).all()
@@ -124,7 +124,7 @@ def test_get_session_context_manager() -> None:
     """Test that get_session properly uses context manager."""
     from sqlalchemy.pool import StaticPool
 
-    from app import database  # noqa: F401, F811
+    from app.core import database  # noqa: F401, F811
 
     # Create test engine
     test_engine = create_engine(

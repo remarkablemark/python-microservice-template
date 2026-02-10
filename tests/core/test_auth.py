@@ -10,7 +10,8 @@ from fastapi.testclient import TestClient
 @pytest.fixture
 def client_with_auth() -> Generator[TestClient, None, None]:
     """Test client with authentication enabled."""
-    from app import auth, protected
+    from app.api.routes import protected
+    from app.core import auth
 
     # Temporarily set valid tokens
     original_tokens = auth.VALID_API_TOKENS.copy()
@@ -31,7 +32,7 @@ def client_with_auth() -> Generator[TestClient, None, None]:
 @pytest.fixture
 def client_without_auth() -> Generator[TestClient, None, None]:
     """Test client without authentication configured."""
-    from app import auth
+    from app.core import auth
 
     # Temporarily clear tokens
     original_tokens = auth.VALID_API_TOKENS.copy()
@@ -119,7 +120,7 @@ def test_protected_endpoint_not_available_without_auth_config(
 
 def test_auth_not_configured_error() -> None:
     """Test authentication error when tokens are not configured."""
-    from app import auth
+    from app.core import auth
 
     # Save and clear tokens
     original_tokens = auth.VALID_API_TOKENS.copy()
@@ -149,7 +150,7 @@ def test_auth_not_configured_error() -> None:
 
 def test_is_auth_enabled() -> None:
     """Test is_auth_enabled function."""
-    from app import auth
+    from app.core import auth
 
     # Save and clear tokens
     original_tokens = auth.VALID_API_TOKENS.copy()

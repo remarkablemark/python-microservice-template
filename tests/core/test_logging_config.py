@@ -9,7 +9,7 @@ from io import StringIO
 
 import pytest
 
-from app.logging_config import JSONFormatter, get_logger, setup_logging
+from app.core.logging_config import JSONFormatter, get_logger, setup_logging
 
 
 @pytest.fixture

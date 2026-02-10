@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 
 # Import all models for autogenerate support
 from alembic import context
-from app.models import *  # noqa: F401, F403
+from app.models.user import *  # noqa: F401, F403
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
