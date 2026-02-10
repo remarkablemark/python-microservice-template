@@ -123,6 +123,7 @@ Runs the app in development mode:
 
 - Server: http://127.0.0.1:8000
 - Documentation: http://127.0.0.1:8000/docs
+- OpenAPI: http://127.0.0.1:8000/openapi.json
 
 The server will reload if you make edits.
 
