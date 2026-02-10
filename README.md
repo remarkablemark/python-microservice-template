@@ -29,6 +29,48 @@ Install the dependencies:
 uv sync
 ```
 
+## Database
+
+The microservice supports optional database integration using SQLModel and Alembic.
+
+### Environment Variables
+
+Copy the example environment file and configure your database:
+
+```sh
+cp .env.example .env
+```
+
+Edit `.env` and set your database URL:
+
+```sh
+# For SQLite (Development)
+DATABASE_URL=sqlite:///./app.db
+
+# For PostgreSQL (Production)
+# DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+```
+
+### Migrations
+
+Create a new migration after modifying models:
+
+```sh
+uv run alembic revision --autogenerate -m "description"
+```
+
+Apply migrations:
+
+```sh
+uv run alembic upgrade head
+```
+
+Rollback migration:
+
+```sh
+uv run alembic downgrade -1
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -69,6 +111,14 @@ Formats the code.
 ### `uv run ruff check`
 
 Lints the code.
+
+### `uv run alembic revision --autogenerate -m "message"`
+
+Creates a new database migration.
+
+### `uv run alembic upgrade head`
+
+Applies all pending database migrations.
 
 ## License
 

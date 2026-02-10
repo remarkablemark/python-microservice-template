@@ -12,6 +12,9 @@ uv sync
 
 # Install pre-commit hooks
 uv run pre-commit install
+
+# Optional: Set up database (copy .env.example to .env and configure DATABASE_URL)
+cp .env.example .env
 ```
 
 ## Build/Lint/Test Commands
@@ -77,6 +80,25 @@ uv run fastapi run
 uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
+### Database Migrations (Optional)
+
+```bash
+# Create a new migration after modifying models
+uv run alembic revision --autogenerate -m "description of changes"
+
+# Apply all pending migrations
+uv run alembic upgrade head
+
+# Rollback last migration
+uv run alembic downgrade -1
+
+# View migration history
+uv run alembic history
+
+# Check current migration version
+uv run alembic current
+```
+
 ## Code Style Guidelines
 
 ### Import Organization
@@ -108,6 +130,16 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 - Include routers in main.py with descriptive prefixes
 - Keep Pydantic models simple and focused
 - Return types should be explicit in route handlers
+
+### Database (Optional)
+
+- Database integration is optional and controlled by `DATABASE_URL` environment variable
+- Use SQLModel for type-safe database models
+- All SQLModel models should inherit from `SQLModel` with `table=True`
+- Use Alembic for database migrations
+- Follow naming convention: model classes are singular (e.g., `User`, not `Users`)
+- Database session dependency: `from app.database import get_session`
+- Migration files are auto-formatted with Black and Ruff via post-write hooks
 
 ### Error Handling
 
@@ -152,8 +184,14 @@ uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
 app/
 ├── __init__.py
 ├── main.py          # FastAPI app initialization and router includes
+├── database.py      # Optional database configuration
+├── models.py        # SQLModel database models (example)
 ├── healthcheck.py   # Health check endpoints
 └── items.py         # Item-related endpoints
+
+alembic/
+├── versions/        # Database migration files
+└── env.py           # Alembic environment configuration
 
 tests/
 ├── __init__.py
@@ -168,6 +206,8 @@ tests/
 - `pyproject.toml`: Main project configuration, tool settings
 - `.pre-commit-config.yaml`: Pre-commit hooks configuration
 - `uv.lock`: Dependency lock file (do not edit manually)
+- `.env`: Environment variables (not in version control, copy from `.env.example`)
+- `alembic.ini`: Alembic migration configuration
 
 ## Notes
 
