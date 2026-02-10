@@ -23,9 +23,8 @@ cp .env.example .env
 ### Testing
 
 ```bash
-# Run all tests with coverage
-uv run coverage run -m pytest
-uv run coverage report
+# Run all tests with coverage (require 100% coverage)
+uv run coverage run -m pytest && uv run coverage report
 
 # Run specific test file
 uv run pytest tests/test_main.py
@@ -49,6 +48,9 @@ uv run black .
 # Check formatting without changing files
 uv run black --check .
 
+# Check imports without changing files
+uv run isort --check-only .
+
 # Sort imports
 uv run isort .
 
@@ -61,7 +63,7 @@ uv run ruff check --fix
 # Type checking with pyright
 uv run pyright
 
-# Run all pre-commit hooks
+# Run all pre-commit hooks (quality checks)
 uv run pre-commit run --all-files
 ```
 
@@ -108,6 +110,8 @@ uv run alembic current
 - Standard library imports first, then third-party, then local imports
 - Use `isort` to maintain consistent import ordering
 - Use absolute imports for local modules (e.g., `from app.main import app`)
+- Use `# isort: skip` to skip sorting for specific import lines (e.g., when models need to be imported for side effects)
+- Use `# isort: skip_file` at the top of a file to skip the entire file
 
 ### Type Annotations
 
@@ -173,7 +177,10 @@ uv run alembic current
 - Use descriptive test names starting with `test_`
 - Assert on both status codes and response content
 - Include type annotations for test functions: `def test_function() -> None:`
-- Enforce 100% test coverage
+- **100% test coverage is enforced** - `fail_under = 100` in pyproject.toml
+- Use `# pragma: no cover` for lines that are impossible/impractical to test (e.g., module-level initialization based on environment variables)
+- Add type hints for test fixtures to avoid pyright errors: `-> Generator[TestClient, None, None]`
+- Use `# isort: skip` for imports that need specific ordering (e.g., model imports for SQLAlchemy registration)
 
 ### Documentation
 
@@ -216,11 +223,34 @@ tests/
 
 ## Key Configuration Files
 
-- `pyproject.toml`: Main project configuration, tool settings
+- `pyproject.toml`: Main project configuration, tool settings (Black, isort, Ruff, Pyright, Coverage, MyPy)
 - `.pre-commit-config.yaml`: Pre-commit hooks configuration
 - `uv.lock`: Dependency lock file (do not edit manually)
 - `.env`: Environment variables (not in version control, copy from `.env.example`)
 - `alembic.ini`: Alembic migration configuration
+
+## Tool Configuration
+
+### Black
+- Line length: 88 characters (default)
+- Fast mode enabled
+
+### isort
+- Profile: black (compatible with Black formatting)
+- Line length: 88 characters
+
+### Ruff
+- Target: Python 3.10+
+- Selected rules: pycodestyle, pyflakes, isort, flake8-bugbear, comprehensions, pyupgrade
+- Enforces: no unused arguments, no print statements, proper exception handling
+
+### Pyright
+- Strict type checking for `app/` directory
+- Reports unused imports, incorrect types, and type mismatches
+
+### Coverage
+- Enforces 100% code coverage (`fail_under = 100`)
+- Tracks per-test coverage with dynamic context
 
 ## Optional Features
 
@@ -235,9 +265,30 @@ The microservice supports optional features that can be enabled via environment 
    - Supports PostgreSQL (production) and SQLite (development)
    - Migrations managed with Alembic
 
+## Code Quality Standards
+
+The project enforces strict code quality standards:
+
+- **Black** - Code formatting with 88 character line length
+- **isort** - Import sorting and organization
+- **Ruff** - Fast Python linting with auto-fix support
+- **Pyright** - Strict type checking for `app/` directory
+- **Coverage** - 100% test coverage enforced via `fail_under = 100`
+- **Pre-commit hooks** - Automatically run checks before each commit
+
+All checks must pass before code can be merged:
+
+```bash
+# Run all quality checks
+uv run black --check .
+uv run isort --check-only .
+uv run ruff check
+uv run pyright
+uv run coverage run -m pytest && uv run coverage report
+```
+
 ## Notes
 
-- The project follows strict code quality standards enforced by pre-commit hooks
-- All code must pass Black formatting, Ruff linting, and MyPy type checking
-- Coverage reports are automatically generated and uploaded to Codecov
 - The project is configured for Python 3.10+ with modern type annotations
+- Coverage reports are automatically generated and uploaded to Codecov
+- Any code that drops coverage below 100% will fail CI/CD checks
