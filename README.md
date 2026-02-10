@@ -1,6 +1,6 @@
 # python-microservice-template
 
-[![codecov](https://codecov.io/gh/remarkablemark/python-microservice-template/graph/badge.svg?token=ldtrSznCY4)](https://codecov.io/gh/remarkablemark/python-microservice-template)
+[![codecov](https://codecov.io/gh/remarkablemark/python-microservice-template/graph/badge.svg?token=RBdotUNGnY)](https://codecov.io/gh/remarkablemark/python-microservice-template)
 [![test](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml)
 [![lint](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml)
 
