@@ -217,6 +217,76 @@ uv run alembic current
 - Use uv for fast dependency management
 - Enable coverage dynamic context for better test insights
 
+## Git Commit Guidelines
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification for commit messages.
+
+### Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Types
+
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc.)
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **perf**: A code change that improves performance
+- **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: Changes to CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+
+### Scope (Optional)
+
+The scope provides additional contextual information:
+- `(api)`: Changes to API endpoints
+- `(auth)`: Changes to authentication
+- `(db)`: Changes to database models or migrations
+- `(logging)`: Changes to logging configuration
+- `(otel)`: Changes to OpenTelemetry instrumentation
+- `(tests)`: Changes to test files
+- `(deps)`: Dependency updates
+
+### Breaking Changes
+
+Breaking changes should be indicated by:
+- Adding `!` after the type/scope: `feat!: remove deprecated endpoint`
+- Adding `BREAKING CHANGE:` in the footer
+
+### Examples
+
+```
+feat(api): add user profile endpoint
+
+fix(auth): resolve token validation issue
+
+docs(readme): update installation instructions
+
+test: add tests for healthcheck endpoint
+
+build(deps): upgrade FastAPI to 0.109.0
+
+refactor(db)!: change User model primary key type
+
+BREAKING CHANGE: User.id is now UUID instead of int
+```
+
+### Best Practices
+
+- Use the imperative, present tense: "change" not "changed" nor "changes"
+- Don't capitalize the first letter of the description
+- No period (.) at the end of the description
+- Limit the description to 72 characters or less
+- Reference issue numbers in the footer when applicable
+
 ## Project Structure
 
 ```
