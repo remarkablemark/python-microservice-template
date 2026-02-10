@@ -13,9 +13,9 @@ uv sync
 # Install pre-commit hooks
 uv run pre-commit install
 
-# Optional: Set up environment variables (database, authentication, etc.)
+# Optional: Set up environment variables (database, authentication, logging, etc.)
 cp .env.example .env
-# Edit .env to configure DATABASE_URL and/or API_TOKENS
+# Edit .env to configure DATABASE_URL, API_TOKENS, and/or LOG_LEVEL
 ```
 
 ## Build/Lint/Test Commands
@@ -155,6 +155,17 @@ uv run alembic current
 - Database session dependency: `from app.database import get_session`
 - Migration files are auto-formatted with Black and Ruff via post-write hooks
 
+### Logging
+
+- Structured JSON logging is configured by default for better log aggregation and parsing
+- Log level can be controlled via `LOG_LEVEL` environment variable (defaults to `INFO`)
+- Supported log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+- Get a logger for your module: `from app.logging_config import get_logger; logger = get_logger(__name__)`
+- All logs are output in JSON format with timestamp, level, logger name, message, and source location
+- HTTP request/response middleware automatically logs all API requests
+- Startup and shutdown events are logged
+- Exception details (type, message, traceback) are automatically included in error logs
+
 ### Error Handling
 
 - Raise FastAPI HTTPException for HTTP errors
@@ -207,7 +218,8 @@ app/
 ├── models.py        # SQLModel database models (example)
 ├── users.py         # User CRUD endpoints (requires database)
 ├── healthcheck.py   # Health check endpoints
-└── items.py         # Item-related endpoints
+├── items.py         # Item-related endpoints
+└── logging_config.py # JSON logging configuration
 
 alembic/
 ├── versions/        # Database migration files
@@ -218,7 +230,8 @@ tests/
 ├── conftest.py      # Pytest fixtures
 ├── test_main.py     # Main app tests
 ├── test_healthcheck.py  # Health check tests
-└── test_items.py    # Item endpoints tests
+├── test_items.py    # Item endpoints tests
+└── test_logging_config.py  # Logging configuration tests
 ```
 
 ## Key Configuration Files
