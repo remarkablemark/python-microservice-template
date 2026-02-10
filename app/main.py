@@ -2,12 +2,14 @@ from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor  # type: ignore
 
 from app.auth import is_auth_enabled
 from app.database import create_db_and_tables, engine
 from app.healthcheck import router as healthcheck_router
 from app.items import router as items_router
 from app.logging_config import get_logger
+from app.otel import is_otel_enabled, setup_opentelemetry
 from app.protected import router as protected_router
 from app.users import router as users_router
 
@@ -18,9 +20,11 @@ logger = get_logger(__name__)
 async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler.
 
-    Creates database tables on startup if database is configured.
+    Sets up OpenTelemetry and creates database tables on startup if configured.
     """
     logger.info("Application startup")
+    # Startup: Initialize OpenTelemetry if enabled
+    setup_opentelemetry()
     # Startup: Create database tables if database is enabled
     if engine is not None:  # pragma: no cover
         logger.info("Database enabled, creating tables")
@@ -31,6 +35,11 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Optional: Instrument FastAPI with OpenTelemetry if enabled
+if is_otel_enabled():  # pragma: no cover
+    logger.info("OpenTelemetry enabled, instrumenting FastAPI")
+    FastAPIInstrumentor.instrument_app(app)
 
 
 @app.middleware("http")

@@ -13,9 +13,9 @@ uv sync
 # Install pre-commit hooks
 uv run pre-commit install
 
-# Optional: Set up environment variables (database, authentication, logging, etc.)
+# Optional: Set up environment variables (database, authentication, logging, OpenTelemetry, etc.)
 cp .env.example .env
-# Edit .env to configure DATABASE_URL, API_TOKENS, and/or LOG_LEVEL
+# Edit .env to configure DATABASE_URL, API_TOKENS, LOG_LEVEL, and/or OTEL_* variables
 ```
 
 ## Build/Lint/Test Commands
@@ -166,6 +166,17 @@ uv run alembic current
 - Startup and shutdown events are logged
 - Exception details (type, message, traceback) are automatically included in error logs
 
+### OpenTelemetry (Optional)
+
+- OpenTelemetry instrumentation is optional and controlled by `OTEL_ENABLED` environment variable
+- When enabled, FastAPI is automatically instrumented for distributed tracing and metrics
+- Requires `OTEL_EXPORTER_OTLP_ENDPOINT` to be set for data export (e.g., `http://localhost:4317` for local Jaeger)
+- Service name can be customized via `OTEL_SERVICE_NAME` (defaults to `python-microservice-template`)
+- Supports any OTLP-compatible backend: Jaeger, Grafana Cloud, Datadog, Honeycomb, etc.
+- Initialization happens during application startup in `lifespan` handler
+- Use `from app.otel import is_otel_enabled` to check if OpenTelemetry is enabled
+- Logs warnings if enabled but endpoint is not configured
+
 ### Error Handling
 
 - Raise FastAPI HTTPException for HTTP errors
@@ -219,7 +230,8 @@ app/
 ├── users.py         # User CRUD endpoints (requires database)
 ├── healthcheck.py   # Health check endpoints
 ├── items.py         # Item-related endpoints
-└── logging_config.py # JSON logging configuration
+├── logging_config.py # JSON logging configuration
+└── otel.py          # Optional OpenTelemetry instrumentation
 
 alembic/
 ├── versions/        # Database migration files
@@ -231,7 +243,8 @@ tests/
 ├── test_main.py     # Main app tests
 ├── test_healthcheck.py  # Health check tests
 ├── test_items.py    # Item endpoints tests
-└── test_logging_config.py  # Logging configuration tests
+├── test_logging_config.py  # Logging configuration tests
+└── test_otel.py     # OpenTelemetry configuration tests
 ```
 
 ## Key Configuration Files
@@ -277,6 +290,12 @@ The microservice supports optional features that can be enabled via environment 
    - Database-dependent routers (like `/users`) only load if DB is configured
    - Supports PostgreSQL (production) and SQLite (development)
    - Migrations managed with Alembic
+
+3. **OpenTelemetry** - Set `OTEL_ENABLED=true` to enable distributed tracing and metrics
+   - Automatic instrumentation of FastAPI endpoints
+   - Exports traces and metrics to OTLP-compatible backends (Jaeger, Grafana, Datadog, etc.)
+   - Configured via `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable
+   - Service name customizable via `OTEL_SERVICE_NAME` (defaults to 'python-microservice-template')
 
 ## Code Quality Standards
 
