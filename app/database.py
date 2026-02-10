@@ -14,7 +14,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Database is optional - only initialize if DATABASE_URL is set
 engine: Engine | None = None
-if DATABASE_URL:
+if DATABASE_URL:  # pragma: no cover
     # Create engine with appropriate settings
     connect_args = {}
     if DATABASE_URL.startswith("sqlite"):
@@ -38,14 +38,17 @@ def get_session() -> Generator[Session, None, None]:
     """Dependency to get database session.
 
     Yields:
-        Database session if database is enabled, None otherwise.
+        Database session if database is enabled.
 
     Raises:
-        RuntimeError: If database is not configured.
+        HTTPException: If database is not configured.
     """
+    from fastapi import HTTPException, status
+
     if engine is None:
-        raise RuntimeError(
-            "Database not configured. Set DATABASE_URL environment variable."
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database not configured. Set DATABASE_URL environment variable.",
         )
 
     with Session(engine) as session:

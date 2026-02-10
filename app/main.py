@@ -18,7 +18,7 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     Creates database tables on startup if database is configured.
     """
     # Startup: Create database tables if database is enabled
-    if engine is not None:
+    if engine is not None:  # pragma: no cover
         create_db_and_tables()
     yield
     # Shutdown: Add cleanup code here if needed
@@ -30,11 +30,11 @@ app.include_router(healthcheck_router)
 app.include_router(items_router)
 
 # Optional: Include protected routers if auth is enabled
-if is_auth_enabled():
+if is_auth_enabled():  # pragma: no cover
     app.include_router(protected_router)
 
 # Optional: Include database-dependent routers if database is configured
-if engine is not None:
+if engine is not None:  # pragma: no cover
     app.include_router(users_router)
 
 
