@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file contains development guidelines for agentic coding agents working in this FastAPI repository.
+This file contains development guidelines for agentic coding agents working in this Python microservice repository.
 
 ## Development Environment Setup
 

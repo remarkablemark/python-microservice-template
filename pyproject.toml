@@ -1,10 +1,10 @@
 [project]
-name = "fastapi-template"
+name = "python-microservice-template"
 version = "0.0.0"
 authors = [
     { name="Mark", email="mark@remarkablemark.org" },
 ]
-description = "FastAPI Template"
+description = "Python microservice template"
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
 license = "MIT"
@@ -27,8 +27,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/remarkablemark/fastapi-template"
-Issues = "https://github.com/remarkablemark/fastapi-template/issues"
+Homepage = "https://github.com/remarkablemark/python-microservice-template"
+Issues = "https://github.com/remarkablemark/python-microservice-template/issues"
 
 [tool.black]
 fast = true

@@ -1,8 +1,8 @@
-# fastapi-template
+# python-microservice-template
 
-[![codecov](https://codecov.io/gh/remarkablemark/fastapi-template/graph/badge.svg?token=ldtrSznCY4)](https://codecov.io/gh/remarkablemark/fastapi-template)
-[![test](https://github.com/remarkablemark/fastapi-template/actions/workflows/test.yml/badge.svg)](https://github.com/remarkablemark/fastapi-template/actions/workflows/test.yml)
-[![lint](https://github.com/remarkablemark/fastapi-template/actions/workflows/lint.yml/badge.svg)](https://github.com/remarkablemark/fastapi-template/actions/workflows/lint.yml)
+[![codecov](https://codecov.io/gh/remarkablemark/python-microservice-template/graph/badge.svg?token=ldtrSznCY4)](https://codecov.io/gh/remarkablemark/python-microservice-template)
+[![test](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml)
+[![lint](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml/badge.svg)](https://github.com/remarkablemark/python-microservice-template/actions/workflows/lint.yml)
 
 ⚡ [FastAPI](https://fastapi.tiangolo.com/) template inspired by [Full Stack FastAPI Template](https://fastapi.tiangolo.com/project-generation/).
 
@@ -19,8 +19,8 @@ brew install uv
 Clone the repository:
 
 ```sh
-git clone https://github.com/remarkablemark/fastapi-template.git
-cd fastapi-template
+git clone https://github.com/remarkablemark/python-microservice-template.git
+cd python-microservice-template
 ```
 
 Install the dependencies:
@@ -60,4 +60,4 @@ Lints the code.
 
 ## License
 
-[MIT](https://github.com/remarkablemark/fastapi-template/blob/master/LICENSE)
+[MIT](https://github.com/remarkablemark/python-microservice-template/blob/master/LICENSE)

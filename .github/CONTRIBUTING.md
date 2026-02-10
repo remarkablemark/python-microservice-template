@@ -4,15 +4,15 @@ Pull requests are welcome! By participating in this project, you agree to abide 
 
 ## Fork
 
-[Fork](https://github.com/remarkablemark/fastapi-template/fork) and then clone the repository:
+[Fork](https://github.com/remarkablemark/python-microservice-template/fork) and then clone the repository:
 
 ```sh
 # replace <USER> with your username
-git clone git@github.com:<USER>/fastapi-template.git
+git clone git@github.com:<USER>/python-microservice-template.git
 ```
 
 ```sh
-cd fastapi-template
+cd python-microservice-template
 ```
 
 ## Install
@@ -62,13 +62,13 @@ Write a commit message that follows the [Conventional Commits](https://www.conve
 - **ci**: Updates configuration files and scripts for continuous integration
 - **docs**: Documentation only changes
 
-Push to your fork and create a [pull request](https://github.com/remarkablemark/fastapi-template/compare/).
+Push to your fork and create a [pull request](https://github.com/remarkablemark/python-microservice-template/compare/).
 
 At this point, wait for us to review your pull request. We'll try to review pull requests within 1-3 business days. We may suggest changes, improvements, and/or alternatives.
 
 Things that will improve the chance that your pull request will be accepted:
 
-- [ ] Write tests that pass [CI](https://github.com/remarkablemark/fastapi-template/actions/workflows/test.yml).
+- [ ] Write tests that pass [CI](https://github.com/remarkablemark/python-microservice-template/actions/workflows/test.yml).
 - [ ] Write solid documentation.
 - [ ] Write a good [commit message](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit).
 
@@ -157,7 +157,7 @@ twine upload --repository testpypi dist/*
 Install the package:
 
 ```sh
-pip install --index-url https://test.pypi.org/simple/ --no-deps fastapi-template
+pip install --index-url https://test.pypi.org/simple/ --no-deps python-microservice-template
 ```
 
 ## Docs
@@ -171,7 +171,7 @@ pip install -e '.[docs]'
 Generate the docs with [pdoc](https://pdoc.dev/):
 
 ```sh
-pdoc src/fastapi-template/
+pdoc src/python-microservice-template/
 ```
 
 ## Release
