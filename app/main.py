@@ -7,10 +7,7 @@ from opentelemetry.instrumentation.fastapi import (  # pyright: ignore[reportMis
 )
 
 from app.api.routes.healthcheck import router as healthcheck_router
-from app.api.routes.items import router as items_router
-from app.api.routes.protected import router as protected_router
-from app.api.routes.users import router as users_router
-from app.core.auth import is_auth_enabled
+from app.api.routes.v1 import router as v1_router
 from app.core.database import create_db_and_tables, engine
 from app.core.logging_config import get_logger
 from app.core.metadata import PROJECT_DESCRIPTION, PROJECT_NAME, PROJECT_VERSION
@@ -62,14 +59,4 @@ async def log_requests(
 
 
 app.include_router(healthcheck_router)
-app.include_router(items_router)
-
-# Optional: Include protected routers if auth is enabled
-if is_auth_enabled():  # pragma: no cover
-    logger.info("Authentication enabled, including protected routes")
-    app.include_router(protected_router)
-
-# Optional: Include database-dependent routers if database is configured
-if engine is not None:  # pragma: no cover
-    logger.info("Database configured, including user routes")
-    app.include_router(users_router)
+app.include_router(v1_router)

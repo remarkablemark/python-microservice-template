@@ -124,7 +124,9 @@ uv run alembic current
 ### Code Structure
 
 - Use APIRouter for modular endpoint organization
-- Include routers in main.py with descriptive prefixes
+- All API routes except healthcheck are versioned under `/v1` prefix
+- V1 routes are organized in `app/api/routes/v1/` directory with a consolidated router
+- Healthcheck endpoint remains at root (`/`) for infrastructure monitoring
 - Keep Pydantic models simple and focused
 - Return types should be explicit in route handlers
 
@@ -524,10 +526,12 @@ app/
 │   ├── __init__.py
 │   └── routes/
 │       ├── __init__.py
-│       ├── healthcheck.py  # Health check endpoints
-│       ├── items.py        # Item-related endpoints
-│       ├── protected.py    # Protected endpoints (requires auth)
-│       └── users.py        # User CRUD endpoints (requires database)
+│       ├── healthcheck.py  # Health check endpoint (root path)
+│       └── v1/             # V1 API routes (all under /v1 prefix)
+│           ├── __init__.py     # V1 router aggregator
+│           ├── items.py        # Item-related endpoints
+│           ├── protected.py    # Protected endpoints (requires auth)
+│           └── users.py        # User CRUD endpoints (requires database)
 ├── core/
 │   ├── __init__.py
 │   ├── auth.py          # Optional bearer token authentication
@@ -553,9 +557,11 @@ tests/
 │   ├── __init__.py
 │   └── routes/
 │       ├── __init__.py
-│       ├── test_healthcheck.py  # Health check tests
-│       ├── test_items.py        # Item endpoints tests
-│       └── test_users.py        # User CRUD tests
+│       ├── test_healthcheck.py  # Health check tests (root path)
+│       └── v1/                  # V1 API route tests
+│           ├── __init__.py
+│           ├── test_items.py    # Item endpoints tests
+│           └── test_users.py    # User CRUD tests
 ├── core/
 │   ├── __init__.py
 │   ├── test_auth.py             # Authentication tests

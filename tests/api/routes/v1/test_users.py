@@ -29,7 +29,7 @@ def create_test_user(
         JSON response data from user creation
     """
     response = client.post(
-        "/users/",
+        "/v1/users/",
         json={
             "email": email,
             "username": username,
@@ -43,11 +43,11 @@ def create_test_user(
 @pytest.fixture
 def client_with_db(db_session: Session) -> Generator[TestClient, None, None]:
     """Test client with database enabled."""
-    from app.api.routes import users
+    from app.api.routes.v1 import users
 
     # Create test app with database and users router
     test_app = create_test_app_with_database(
-        db_session, include_routers=[(users.router, {})]
+        db_session, include_routers=[(users.router, {"prefix": "/v1"})]
     )
 
     yield TestClient(test_app)
@@ -57,7 +57,7 @@ def client_with_db(db_session: Session) -> Generator[TestClient, None, None]:
 def test_create_user(client_with_db: TestClient) -> None:
     """Test creating a new user."""
     response = client_with_db.post(
-        "/users/",
+        "/v1/users/",
         json={
             "email": "test@example.com",
             "username": "testuser",
@@ -97,7 +97,7 @@ def test_create_duplicate_user(
 
     # Try to create user with duplicate field
     response = client_with_db.post(
-        "/users/",
+        "/v1/users/",
         json={
             "email": second_email,
             "username": second_username,
@@ -117,7 +117,7 @@ def test_get_user(client_with_db: TestClient) -> None:
     user_id = user_data["id"]
 
     # Get user
-    response = client_with_db.get(f"/users/{user_id}")
+    response = client_with_db.get(f"/v1/users/{user_id}")
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == user_id
@@ -126,7 +126,7 @@ def test_get_user(client_with_db: TestClient) -> None:
 
 def test_get_nonexistent_user(client_with_db: TestClient) -> None:
     """Test getting a user that doesn't exist."""
-    response = client_with_db.get("/users/99999")
+    response = client_with_db.get("/v1/users/99999")
     assert response.status_code == 404
     assert "not found" in response.json()["detail"].lower()
 
@@ -140,7 +140,7 @@ def test_list_users(client_with_db: TestClient) -> None:
         )
 
     # List users
-    response = client_with_db.get("/users/")
+    response = client_with_db.get("/v1/users/")
     assert response.status_code == 200
     data: list[dict[str, object]] = response.json()
     assert isinstance(data, list)
@@ -156,7 +156,7 @@ def test_list_users_with_pagination(client_with_db: TestClient) -> None:
         )
 
     # Test skip and limit
-    response = client_with_db.get("/users/?skip=2&limit=2")
+    response = client_with_db.get("/v1/users/?skip=2&limit=2")
     assert response.status_code == 200
     data: list[dict[str, object]] = response.json()
     assert isinstance(data, list)

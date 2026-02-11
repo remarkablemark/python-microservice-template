@@ -13,7 +13,8 @@ from tests.utils.database import temporary_test_engine
 
 def test_app_with_database_enabled() -> None:
     """Test app lifespan with database enabled."""
-    from app.api.routes import healthcheck, items, users
+    from app.api.routes import healthcheck
+    from app.api.routes.v1 import items, users
     from app.core import database
 
     with temporary_test_engine(database):
@@ -26,10 +27,10 @@ def test_app_with_database_enabled() -> None:
 
         test_app = FastAPI(lifespan=test_lifespan)
         test_app.include_router(healthcheck.router)
-        test_app.include_router(items.router)
+        test_app.include_router(items.router, prefix="/v1")
 
         # Include users router since database is enabled
-        test_app.include_router(users.router)
+        test_app.include_router(users.router, prefix="/v1")
 
         # Test with client
         with TestClient(test_app) as client:
@@ -40,23 +41,23 @@ def test_app_with_database_enabled() -> None:
 
 def test_app_with_auth_enabled() -> None:
     """Test app with authentication enabled."""
-    from app.api.routes import items, protected
+    from app.api.routes.v1 import items, protected
     from app.core import auth
 
     with temporary_valid_tokens(auth, {"test-token"}):
         # Create test app
         test_app = FastAPI()
-        test_app.include_router(items.router)
+        test_app.include_router(items.router, prefix="/v1")
 
         # Include protected router since auth is enabled
         if auth.is_auth_enabled():
-            test_app.include_router(protected.router)
+            test_app.include_router(protected.router, prefix="/v1")
 
         # Test with client
         with TestClient(test_app) as client:
             # Verify protected endpoint is available
             response = client.get(
-                "/protected/", headers=create_auth_header("test-token")
+                "/v1/protected/", headers=create_auth_header("test-token")
             )
             assert response.status_code == 200
 

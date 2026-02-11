@@ -15,7 +15,7 @@ def test_read_item(
 ) -> None:
     """Test reading an item with and without query parameter."""
     item_id = 5
-    url = f"/items/{item_id}"
+    url = f"/v1/items/{item_id}"
     if query_param is not None:
         url += f"?q={query_param}"
 
