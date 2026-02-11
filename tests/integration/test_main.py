@@ -34,19 +34,18 @@ def test_app_with_database_enabled() -> None:
         # Test with client
         with TestClient(test_app) as client:
             # Verify basic endpoint works
-            response = client.get("/healthcheck")
+            response = client.get("/")
             assert response.status_code == 200
 
 
 def test_app_with_auth_enabled() -> None:
     """Test app with authentication enabled."""
-    from app.api.routes import healthcheck, items, protected
+    from app.api.routes import items, protected
     from app.core import auth
 
     with temporary_valid_tokens(auth, {"test-token"}):
         # Create test app
         test_app = FastAPI()
-        test_app.include_router(healthcheck.router)
         test_app.include_router(items.router)
 
         # Include protected router since auth is enabled

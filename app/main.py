@@ -2,7 +2,9 @@ from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor  # type: ignore
+from opentelemetry.instrumentation.fastapi import (  # pyright: ignore[reportMissingTypeStubs]
+    FastAPIInstrumentor,
+)
 
 from app.api.routes.healthcheck import router as healthcheck_router
 from app.api.routes.items import router as items_router
@@ -71,10 +73,3 @@ if is_auth_enabled():  # pragma: no cover
 if engine is not None:  # pragma: no cover
     logger.info("Database configured, including user routes")
     app.include_router(users_router)
-
-
-@app.get("/")
-def read_root() -> dict[str, str]:
-    """Root endpoint."""
-    logger.debug("Root endpoint called")
-    return {"Hello": "World"}

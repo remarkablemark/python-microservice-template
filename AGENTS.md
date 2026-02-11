@@ -27,10 +27,10 @@ cp .env.example .env
 uv run coverage run -m pytest && uv run coverage report
 
 # Run specific test file
-uv run pytest tests/test_main.py
+uv run pytest tests/api/routes/test_healthcheck.py
 
 # Run specific test function
-uv run pytest tests/test_main.py::test_read_root
+uv run pytest tests/api/routes/test_healthcheck.py::test_healthcheck
 
 # Run tests with verbose output
 uv run pytest -v
@@ -549,7 +549,6 @@ alembic/
 tests/
 ├── __init__.py
 ├── conftest.py          # Pytest fixtures
-├── test_main.py         # Main app tests
 ├── api/
 │   ├── __init__.py
 │   └── routes/
@@ -568,8 +567,7 @@ tests/
 │   └── test_otel.py             # OpenTelemetry configuration tests
 ├── integration/
 │   ├── __init__.py
-│   ├── test_main_app.py     # Integration tests
-│   └── generate_openapi.py  # OpenAPI spec generator
+│   └── test_main.py     # Integration tests
 └── utils/
     ├── __init__.py
     ├── app_factory.py       # FastAPI test app factory utilities

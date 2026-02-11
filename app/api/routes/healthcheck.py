@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/healthcheck")
+router = APIRouter()
 
 
 @router.get("/")
-def healthcheck() -> bool:
-    return True
+def healthcheck() -> dict[str, str]:
+    """Healthcheck endpoint."""
+    return {"status": "ok"}
