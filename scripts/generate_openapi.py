@@ -1,5 +1,5 @@
 """
-PYTHONPATH=. uv run tests/scripts/generate_openapi.py
+PYTHONPATH=. uv run scripts/generate_openapi.py
 """
 
 import json
