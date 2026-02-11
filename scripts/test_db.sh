@@ -23,7 +23,7 @@ SERVER_PID=$!
 sleep 3
 
 echo "Testing user creation..."
-curl -X POST "http://127.0.0.1:8000/users/" \
+curl -X POST "http://127.0.0.1:8000/v1/users/" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -33,7 +33,7 @@ curl -X POST "http://127.0.0.1:8000/users/" \
   }' && echo
 
 echo "Testing user retrieval..."
-curl "http://127.0.0.1:8000/users/1" && echo
+curl "http://127.0.0.1:8000/v1/users/1" && echo
 
 echo "Stopping server..."
 kill $SERVER_PID
