@@ -3,15 +3,17 @@
 Demonstrates bearer token authentication usage.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from app.core.auth import BearerToken
+from app.core.auth import BearerToken, get_api_token
 
-router = APIRouter(prefix="/protected", tags=["protected"])
+router = APIRouter(
+    prefix="/protected", tags=["protected"], dependencies=[Depends(get_api_token)]
+)
 
 
 @router.get("/")
-def read_protected(_token: BearerToken) -> dict[str, str]:
+def read_protected() -> dict[str, str]:
     """Protected endpoint requiring valid bearer token.
 
     Requires Authorization header: Bearer <token>
