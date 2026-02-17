@@ -1,24 +1,16 @@
 # AGENTS.md
 
-This file contains development guidelines for agentic coding agents working in this Python microservice repository.
+Development guidelines for this Python FastAPI microservice (Python 3.10+, uv package manager).
 
-## Development Environment Setup
-
-Use `uv` as the package manager. The project uses Python 3.10+.
+## Quick Start
 
 ```bash
-# Install dependencies
-uv sync
-
-# Install pre-commit hooks
-uv run pre-commit install
-
-# Optional: Set up environment variables (database, authentication, logging, OpenTelemetry, etc.)
-cp .env.example .env
-# Edit .env to configure DATABASE_URL, API_TOKENS, LOG_LEVEL, and/or OTEL_* variables
+uv sync                   # Install dependencies
+uv run pre-commit install # Install hooks
+cp .env.example .env      # Configure environment
 ```
 
-## Build/Lint/Test Commands
+## Commands
 
 ### Testing
 
