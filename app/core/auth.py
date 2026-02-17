@@ -20,7 +20,7 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 # Load API tokens from environment
 # Supports multiple tokens separated by commas
-VALID_API_TOKENS = set(get_env_list("API_TOKENS"))
+VALID_API_KEYS = set(get_env_list("API_KEYS"))
 
 
 def get_api_token(
@@ -38,13 +38,13 @@ def get_api_token(
         HTTPException: If token is missing or invalid.
     """
     # If no tokens are configured, authentication is disabled
-    if not VALID_API_TOKENS:
+    if not VALID_API_KEYS:
         raise internal_server_exception("Bearer token authentication is not configured")
 
     if not credentials:
         raise unauthorized_exception("Missing bearer token")
 
-    if credentials.credentials not in VALID_API_TOKENS:
+    if credentials.credentials not in VALID_API_KEYS:
         raise forbidden_exception("Invalid bearer token")
 
     return credentials.credentials
@@ -60,4 +60,4 @@ def is_auth_enabled() -> bool:
     Returns:
         True if tokens are configured, False otherwise.
     """
-    return bool(VALID_API_TOKENS)
+    return bool(VALID_API_KEYS)

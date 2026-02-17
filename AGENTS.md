@@ -124,7 +124,7 @@ uv run alembic current
 
 ### Authentication (Optional)
 
-- Bearer token authentication is optional and controlled by `API_TOKENS` environment variable
+- Bearer token authentication is optional and controlled by `API_KEYS` environment variable
 - When enabled, protected endpoints require `Authorization: Bearer <token>` header
 - Supports multiple tokens (comma-separated in environment variable)
 - Protected routers are only included if authentication is enabled
@@ -255,7 +255,7 @@ log_level = get_env_str("LOG_LEVEL", "INFO")
 service_name = get_env_str("SERVICE_NAME", "my-service")
 
 # Comma-separated lists
-api_tokens = get_env_list("API_TOKENS")
+api_tokens = get_env_list("API_KEYS")
 allowed_hosts = get_env_list("ALLOWED_HOSTS", separator=";")
 ```
 
@@ -606,7 +606,7 @@ tests/
 
 The microservice supports optional features that can be enabled via environment variables:
 
-1. **Authentication** - Set `API_TOKENS` to enable bearer token authentication
+1. **Authentication** - Set `API_KEYS` to enable bearer token authentication
    - Protected endpoints will only be included if tokens are configured
    - Multiple tokens can be comma-separated
 

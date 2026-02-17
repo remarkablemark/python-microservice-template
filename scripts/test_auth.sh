@@ -4,7 +4,7 @@
 set -e
 
 echo "Starting server with authentication enabled..."
-export API_TOKENS="test-token-123,another-token-456"
+export API_KEYS="test-key-123,another-key-456"
 
 # Start server in background
 uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
@@ -19,21 +19,21 @@ curl -i http://127.0.0.1:8000/v1/protected/ 2>/dev/null | head -n 1
 
 echo -e "\n=== Testing with invalid token ==="
 echo "Should return 403 Forbidden:"
-curl -i -H "Authorization: Bearer invalid-token" http://127.0.0.1:8000/v1/protected/ 2>/dev/null | head -n 1
+curl -i -H "Authorization: Bearer invalid-key" http://127.0.0.1:8000/v1/protected/ 2>/dev/null | head -n 1
 
 echo -e "\n=== Testing with valid token ==="
 echo "Should return 200 OK:"
-curl -i -H "Authorization: Bearer test-token-123" http://127.0.0.1:8000/v1/protected/ 2>/dev/null | head -n 1
+curl -i -H "Authorization: Bearer test-key-123" http://127.0.0.1:8000/v1/protected/ 2>/dev/null | head -n 1
 echo "Response body:"
-curl -H "Authorization: Bearer test-token-123" http://127.0.0.1:8000/v1/protected/ && echo
+curl -H "Authorization: Bearer test-key-123" http://127.0.0.1:8000/v1/protected/ && echo
 
 echo -e "\n=== Testing protected data endpoint ==="
 echo "Response:"
-curl -H "Authorization: Bearer test-token-123" http://127.0.0.1:8000/v1/protected/data && echo
+curl -H "Authorization: Bearer test-key-123" http://127.0.0.1:8000/v1/protected/data && echo
 
 echo -e "\n=== Testing with second valid token ==="
 echo "Response:"
-curl -H "Authorization: Bearer another-token-456" http://127.0.0.1:8000/v1/protected/ && echo
+curl -H "Authorization: Bearer another-key-456" http://127.0.0.1:8000/v1/protected/ && echo
 
 echo -e "\nStopping server..."
 kill $SERVER_PID

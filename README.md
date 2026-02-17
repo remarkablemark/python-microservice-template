@@ -41,7 +41,7 @@ The microservice supports optional bearer token authentication.
 
 ### Environment Variables
 
-Copy the example environment file and configure your API tokens:
+Copy the example environment file:
 
 ```sh
 cp .env.example .env
@@ -51,10 +51,10 @@ Edit `.env` and set your bearer tokens:
 
 ```sh
 # Single token
-API_TOKENS=your-secret-token-here
+API_KEYS=your-secret-key-here
 
 # Multiple tokens (comma-separated)
-API_TOKENS=token-1,token-2,token-3
+API_KEYS=key-1,key-2,key-3
 ```
 
 ### Protected Endpoints
@@ -62,7 +62,7 @@ API_TOKENS=token-1,token-2,token-3
 Protected endpoints require an `Authorization` header with a bearer token:
 
 ```sh
-curl -H "Authorization: Bearer your-secret-token-here" \
+curl -H "Authorization: Bearer your-secret-key-here" \
   http://127.0.0.1:8000/protected/
 ```
 

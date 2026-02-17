@@ -57,7 +57,7 @@ def get_env_list(
         List of stripped string values (empty strings filtered out)
 
     Example:
-        tokens = get_env_list("API_TOKENS")
+        tokens = get_env_list("API_KEYS")
         allowed_hosts = get_env_list("ALLOWED_HOSTS", separator=";")
     """
     if default is None:

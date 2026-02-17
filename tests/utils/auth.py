@@ -10,10 +10,10 @@ def temporary_valid_tokens(
     auth_module: Any, tokens: set[str] | None
 ) -> Generator[None, None, None]:
     """
-    Context manager that temporarily overrides VALID_API_TOKENS.
+    Context manager that temporarily overrides VALID_API_KEYS.
 
     Args:
-        auth_module: The module containing VALID_API_TOKENS to override (e.g., app.core.auth)
+        auth_module: The module containing VALID_API_KEYS to override (e.g., app.core.auth)
         tokens: Set of tokens to use, or None to clear all tokens
 
     Yields:
@@ -26,16 +26,16 @@ def temporary_valid_tokens(
         with temporary_valid_tokens(auth, None):
             # ... run tests with authentication disabled ...
     """
-    original_tokens = auth_module.VALID_API_TOKENS.copy()
+    original_tokens = auth_module.VALID_API_KEYS.copy()
 
     try:
-        auth_module.VALID_API_TOKENS.clear()
+        auth_module.VALID_API_KEYS.clear()
         if tokens is not None:
-            auth_module.VALID_API_TOKENS.update(tokens)
+            auth_module.VALID_API_KEYS.update(tokens)
         yield
     finally:
-        auth_module.VALID_API_TOKENS.clear()
-        auth_module.VALID_API_TOKENS.update(original_tokens)
+        auth_module.VALID_API_KEYS.clear()
+        auth_module.VALID_API_KEYS.update(original_tokens)
 
 
 def create_auth_header(token: str) -> dict[str, str]:
