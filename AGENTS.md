@@ -102,7 +102,7 @@ uv run alembic current
 - All functions must have explicit type annotations
 - Use modern union syntax: `str | None` instead of `Optional[str]`
 - Use generic dict syntax: `dict[str, str]` instead of `Dict[str, str]`
-- Enable strict MyPy mode - all code must pass strict type checking
+- Enable strict Pyright mode - all code must pass strict type checking
 
 ### Naming Conventions
 
@@ -576,7 +576,7 @@ tests/
 
 ## Key Configuration Files
 
-- `pyproject.toml`: Main project configuration, tool settings (Ruff, Pyright, Coverage, MyPy)
+- `pyproject.toml`: Main project configuration, tool settings (Ruff, Pyright, Coverage)
 - `.pre-commit-config.yaml`: Pre-commit hooks configuration
 - `uv.lock`: Dependency lock file (do not edit manually)
 - `.env`: Environment variables (not in version control, copy from `.env.example`)
