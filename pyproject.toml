@@ -16,7 +16,7 @@ dependencies = [
     "opentelemetry-exporter-otlp>=1.41.1",
     "opentelemetry-instrumentation-fastapi>=0.51b0",
     "opentelemetry-sdk>=1.41.1",
-    "psycopg[binary]>=3.3.3",
+    "psycopg[binary]>=3.3.4",
     "sqlmodel>=0.0.32",
     "uvicorn[standard]>=0.46.0",
 ]
