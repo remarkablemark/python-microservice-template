@@ -1470,7 +1470,7 @@ requires-dist = [
     { name = "opentelemetry-api", specifier = ">=1.42.0" },
     { name = "opentelemetry-exporter-otlp", specifier = ">=1.41.1" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.51b0" },
-    { name = "opentelemetry-sdk", specifier = ">=1.41.1" },
+    { name = "opentelemetry-sdk", specifier = ">=1.42.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4" },
     { name = "sqlmodel", specifier = ">=0.0.32" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.47.0" },
