@@ -1459,7 +1459,7 @@ dev = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.18.3" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.138.0,<1.0.0" },
-    { name = "opentelemetry-api", specifier = ">=1.42.1" },
+    { name = "opentelemetry-api", specifier = ">=1.43.0" },
     { name = "opentelemetry-exporter-otlp", specifier = ">=1.42.1" },
     { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.51b0" },
     { name = "opentelemetry-sdk", specifier = ">=1.43.0" },
